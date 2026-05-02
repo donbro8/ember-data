@@ -13,17 +13,17 @@ def fda_drug_events_query(drug_name: str, limit: int = 100) -> str:
     Returns:
         SQL query string.
     """
+    safe_name = drug_name.replace("'", "\\'")
     return f"""
 SELECT
+    openfda_product_ndc,
     openfda_generic_name,
     openfda_brand_name,
-    serious,
-    receivedate,
-    patient_drug_indication
+    openfda_manufacturer_name,
+    openfda_product_type
 FROM `{FDA_DRUG_DATASET.dataset_id}.drug_label`
-WHERE LOWER(openfda_generic_name) LIKE LOWER('%{drug_name}%')
-   OR LOWER(openfda_brand_name) LIKE LOWER('%{drug_name}%')
-ORDER BY receivedate DESC
+WHERE LOWER(openfda_generic_name) LIKE LOWER('%{safe_name}%')
+   OR LOWER(openfda_brand_name) LIKE LOWER('%{safe_name}%')
 LIMIT {limit}
 """.strip()
 
