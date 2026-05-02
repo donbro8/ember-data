@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ember-bio-data"
+version = "0.1.0"
+description = "BigQuery access, domain models, vector search, and ingestion for Ember Bio"
+requires-python = ">=3.11"
+dependencies = [
+    "ember-bio-shared==0.1.0",
+    "google-cloud-bigquery>=3.0",
+    "google-cloud-aiplatform>=1.40",
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ember_data"]
+
+[tool.uv.sources]
+ember-bio-shared = { path = "../ember-shared", editable = true }
