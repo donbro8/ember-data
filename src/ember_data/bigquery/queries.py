@@ -38,18 +38,21 @@ def patent_search_query(query: str, limit: int = 100) -> str:
     Returns:
         SQL query string.
     """
+    safe_query = query.replace("'", "\\'")
     return f"""
 SELECT
-    publication_number,
-    title_localized,
-    abstract_localized,
-    assignee_harmonized,
-    filing_date,
-    grant_date,
-    citation
-FROM `{PATENTS_DATASET.dataset_id}.publications`
-WHERE LOWER(title_localized.text) LIKE LOWER('%{query}%')
-   OR LOWER(abstract_localized.text) LIKE LOWER('%{query}%')
-ORDER BY filing_date DESC
+    p.publication_number,
+    t.text AS title,
+    a.text AS abstract,
+    p.filing_date,
+    p.grant_date
+FROM `{PATENTS_DATASET.dataset_id}.publications` p,
+     UNNEST(p.title_localized) AS t,
+     UNNEST(p.abstract_localized) AS a
+WHERE t.language = 'en'
+  AND a.language = 'en'
+  AND (LOWER(t.text) LIKE LOWER('%{safe_query}%')
+       OR LOWER(a.text) LIKE LOWER('%{safe_query}%'))
+ORDER BY p.filing_date DESC
 LIMIT {limit}
 """.strip()
