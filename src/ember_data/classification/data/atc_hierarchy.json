@@ -1,0 +1,944 @@
+{
+  "nodes": [
+    {
+      "code": "A",
+      "name": "Alimentary tract and metabolism",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "B",
+      "name": "Blood and blood forming organs",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "C",
+      "name": "Cardiovascular system",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "D",
+      "name": "Dermatologicals",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "G",
+      "name": "Genito urinary system and sex hormones",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "H",
+      "name": "Systemic hormonal preparations",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "J",
+      "name": "Antiinfectives for systemic use",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "L",
+      "name": "Antineoplastic and immunomodulating agents",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "M",
+      "name": "Musculo-skeletal system",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "N",
+      "name": "Nervous system",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "P",
+      "name": "Antiparasitic products, insecticides and repellents",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "R",
+      "name": "Respiratory system",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "S",
+      "name": "Sensory organs",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "V",
+      "name": "Various",
+      "parent": null,
+      "level": 1,
+      "ddd_info": null
+    },
+    {
+      "code": "L01",
+      "name": "Antineoplastic agents",
+      "parent": "L",
+      "level": 2,
+      "ddd_info": null
+    },
+    {
+      "code": "L02",
+      "name": "Endocrine therapy",
+      "parent": "L",
+      "level": 2,
+      "ddd_info": null
+    },
+    {
+      "code": "L03",
+      "name": "Immunostimulants",
+      "parent": "L",
+      "level": 2,
+      "ddd_info": null
+    },
+    {
+      "code": "L04",
+      "name": "Immunosuppressants",
+      "parent": "L",
+      "level": 2,
+      "ddd_info": null
+    },
+    {
+      "code": "L01X",
+      "name": "Other antineoplastic agents",
+      "parent": "L01",
+      "level": 3,
+      "ddd_info": null
+    },
+    {
+      "code": "L01A",
+      "name": "Alkylating agents",
+      "parent": "L01",
+      "level": 3,
+      "ddd_info": null
+    },
+    {
+      "code": "L01B",
+      "name": "Antimetabolites",
+      "parent": "L01",
+      "level": 3,
+      "ddd_info": null
+    },
+    {
+      "code": "L01C",
+      "name": "Plant alkaloids and other natural products",
+      "parent": "L01",
+      "level": 3,
+      "ddd_info": null
+    },
+    {
+      "code": "L01D",
+      "name": "Cytotoxic antibiotics and related substances",
+      "parent": "L01",
+      "level": 3,
+      "ddd_info": null
+    },
+    {
+      "code": "L01E",
+      "name": "Protein kinase inhibitors",
+      "parent": "L01",
+      "level": 3,
+      "ddd_info": null
+    },
+    {
+      "code": "L01F",
+      "name": "Monoclonal antibodies and antibody drug conjugates",
+      "parent": "L01",
+      "level": 3,
+      "ddd_info": null
+    },
+    {
+      "code": "L01G",
+      "name": "Other antineoplastic agents, immunological",
+      "parent": "L01",
+      "level": 3,
+      "ddd_info": null
+    },
+    {
+      "code": "L04A",
+      "name": "Immunosuppressants",
+      "parent": "L04",
+      "level": 3,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC",
+      "name": "Monoclonal antibodies",
+      "parent": "L01X",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XE",
+      "name": "Protein kinase inhibitors",
+      "parent": "L01X",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XX",
+      "name": "Other antineoplastic agents",
+      "parent": "L01X",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EA",
+      "name": "BCR-ABL tyrosine kinase inhibitors",
+      "parent": "L01E",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EB",
+      "name": "Epidermal growth factor receptor (EGFR) tyrosine kinase inhibitors",
+      "parent": "L01E",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EC",
+      "name": "B-Raf serine-threonine kinase (BRAF) inhibitors",
+      "parent": "L01E",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EJ",
+      "name": "Bruton's tyrosine kinase (BTK) inhibitors",
+      "parent": "L01E",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AB",
+      "name": "Tumor necrosis factor alpha (TNF-alpha) inhibitors",
+      "parent": "L04A",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC",
+      "name": "Interleukin inhibitors",
+      "parent": "L04A",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AD",
+      "name": "Calcineurin inhibitors",
+      "parent": "L04A",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AE",
+      "name": "Sphingosine 1-phosphate receptor modulators",
+      "parent": "L04A",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AJ",
+      "name": "JAK inhibitors",
+      "parent": "L04A",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AA",
+      "name": "Selective immunosuppressants",
+      "parent": "L04A",
+      "level": 4,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC01",
+      "name": "trastuzumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC02",
+      "name": "rituximab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 500,
+        "unit": "mg",
+        "route": "IV"
+      }
+    },
+    {
+      "code": "L01XC03",
+      "name": "edrecolomab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC06",
+      "name": "cetuximab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 500,
+        "unit": "mg",
+        "route": "IV"
+      }
+    },
+    {
+      "code": "L01XC07",
+      "name": "bevacizumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 10,
+        "unit": "mg/kg",
+        "route": "IV"
+      }
+    },
+    {
+      "code": "L01XC08",
+      "name": "panitumumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC09",
+      "name": "catumaxomab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC10",
+      "name": "ofatumumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC11",
+      "name": "ipilimumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC12",
+      "name": "brentuximab vedotin",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC13",
+      "name": "pertuzumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC14",
+      "name": "obinutuzumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC15",
+      "name": "nivolumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC16",
+      "name": "dinutuximab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC17",
+      "name": "pembrolizumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC18",
+      "name": "necitumumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC19",
+      "name": "elotuzumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC20",
+      "name": "atezolizumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC21",
+      "name": "avelumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC22",
+      "name": "durvalumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC23",
+      "name": "daratumumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC24",
+      "name": "olaratumab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC25",
+      "name": "inotuzumab ozogamicin",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC26",
+      "name": "gemtuzumab ozogamicin",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC27",
+      "name": "mirvetuximab soravtansine",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC28",
+      "name": "isatuximab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC29",
+      "name": "cemiplimab",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC30",
+      "name": "sacituzumab govitecan",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01XC31",
+      "name": "trastuzumab deruxtecan",
+      "parent": "L01XC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AB01",
+      "name": "etanercept",
+      "parent": "L04AB",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 25,
+        "unit": "mg",
+        "route": "SC"
+      }
+    },
+    {
+      "code": "L04AB02",
+      "name": "infliximab",
+      "parent": "L04AB",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 5,
+        "unit": "mg/kg",
+        "route": "IV"
+      }
+    },
+    {
+      "code": "L04AB03",
+      "name": "afelimomab",
+      "parent": "L04AB",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AB04",
+      "name": "adalimumab",
+      "parent": "L04AB",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 40,
+        "unit": "mg",
+        "route": "SC"
+      }
+    },
+    {
+      "code": "L04AB05",
+      "name": "certolizumab pegol",
+      "parent": "L04AB",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 14.3,
+        "unit": "mg",
+        "route": "SC"
+      }
+    },
+    {
+      "code": "L04AB06",
+      "name": "golimumab",
+      "parent": "L04AB",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 1.67,
+        "unit": "mg",
+        "route": "SC"
+      }
+    },
+    {
+      "code": "L04AC01",
+      "name": "daclizumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC02",
+      "name": "basiliximab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC03",
+      "name": "mepolizumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC04",
+      "name": "canakinumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC05",
+      "name": "ustekinumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC07",
+      "name": "tocilizumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC08",
+      "name": "dupilumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC10",
+      "name": "secukinumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC11",
+      "name": "ixekizumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC12",
+      "name": "sarilumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC13",
+      "name": "benralizumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC14",
+      "name": "risankizumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC16",
+      "name": "guselkumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AC17",
+      "name": "tildrakizumab",
+      "parent": "L04AC",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AD01",
+      "name": "cyclosporine",
+      "parent": "L04AD",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 7,
+        "unit": "mg/kg",
+        "route": "oral"
+      }
+    },
+    {
+      "code": "L04AD02",
+      "name": "tacrolimus",
+      "parent": "L04AD",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 0.075,
+        "unit": "mg/kg",
+        "route": "oral"
+      }
+    },
+    {
+      "code": "L04AA06",
+      "name": "mycophenolic acid",
+      "parent": "L04AA",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 1.5,
+        "unit": "g",
+        "route": "oral"
+      }
+    },
+    {
+      "code": "L04AA18",
+      "name": "everolimus",
+      "parent": "L04AA",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AA23",
+      "name": "natalizumab",
+      "parent": "L04AA",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AA31",
+      "name": "tofacitinib",
+      "parent": "L04AA",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AA36",
+      "name": "apremilast",
+      "parent": "L04AA",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AE01",
+      "name": "fingolimod",
+      "parent": "L04AE",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 0.5,
+        "unit": "mg",
+        "route": "oral"
+      }
+    },
+    {
+      "code": "L04AE02",
+      "name": "siponimod",
+      "parent": "L04AE",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AJ01",
+      "name": "baricitinib",
+      "parent": "L04AJ",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AJ02",
+      "name": "upadacitinib",
+      "parent": "L04AJ",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L04AJ03",
+      "name": "abrocitinib",
+      "parent": "L04AJ",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EA01",
+      "name": "imatinib",
+      "parent": "L01EA",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 400,
+        "unit": "mg",
+        "route": "oral"
+      }
+    },
+    {
+      "code": "L01EA02",
+      "name": "dasatinib",
+      "parent": "L01EA",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 100,
+        "unit": "mg",
+        "route": "oral"
+      }
+    },
+    {
+      "code": "L01EA03",
+      "name": "nilotinib",
+      "parent": "L01EA",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EA04",
+      "name": "bosutinib",
+      "parent": "L01EA",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EA05",
+      "name": "ponatinib",
+      "parent": "L01EA",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EB01",
+      "name": "gefitinib",
+      "parent": "L01EB",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 250,
+        "unit": "mg",
+        "route": "oral"
+      }
+    },
+    {
+      "code": "L01EB02",
+      "name": "erlotinib",
+      "parent": "L01EB",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 150,
+        "unit": "mg",
+        "route": "oral"
+      }
+    },
+    {
+      "code": "L01EB03",
+      "name": "afatinib",
+      "parent": "L01EB",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EB04",
+      "name": "osimertinib",
+      "parent": "L01EB",
+      "level": 5,
+      "ddd_info": null
+    },
+    {
+      "code": "L01EJ01",
+      "name": "ibrutinib",
+      "parent": "L01EJ",
+      "level": 5,
+      "ddd_info": {
+        "ddd": 420,
+        "unit": "mg",
+        "route": "oral"
+      }
+    },
+    {
+      "code": "L01EJ02",
+      "name": "acalabrutinib",
+      "parent": "L01EJ",
+      "level": 5,
+      "ddd_info": null
+    }
+  ],
+  "synonyms": {
+    "adalimumab": "L04AB04",
+    "humira": "L04AB04",
+    "adalimumab-atto": "L04AB04",
+    "adalimumab-adbm": "L04AB04",
+    "adalimumab-adaz": "L04AB04",
+    "monoclonal antibody": "L01XC",
+    "monoclonal antibodies": "L01XC",
+    "mab": "L01XC",
+    "mabs": "L01XC",
+    "trastuzumab": "L01XC01",
+    "herceptin": "L01XC01",
+    "rituximab": "L01XC02",
+    "rituxan": "L01XC02",
+    "mabthera": "L01XC02",
+    "cetuximab": "L01XC06",
+    "erbitux": "L01XC06",
+    "bevacizumab": "L01XC07",
+    "avastin": "L01XC07",
+    "nivolumab": "L01XC15",
+    "opdivo": "L01XC15",
+    "pembrolizumab": "L01XC17",
+    "keytruda": "L01XC17",
+    "atezolizumab": "L01XC20",
+    "tecentriq": "L01XC20",
+    "durvalumab": "L01XC22",
+    "imfinzi": "L01XC22",
+    "daratumumab": "L01XC23",
+    "darzalex": "L01XC23",
+    "etanercept": "L04AB01",
+    "enbrel": "L04AB01",
+    "infliximab": "L04AB02",
+    "remicade": "L04AB02",
+    "certolizumab pegol": "L04AB05",
+    "cimzia": "L04AB05",
+    "golimumab": "L04AB06",
+    "simponi": "L04AB06",
+    "ustekinumab": "L04AC05",
+    "stelara": "L04AC05",
+    "secukinumab": "L04AC10",
+    "cosentyx": "L04AC10",
+    "tocilizumab": "L04AC07",
+    "actemra": "L04AC07",
+    "dupilumab": "L04AC08",
+    "dupixent": "L04AC08",
+    "cyclosporine": "L04AD01",
+    "ciclosporin": "L04AD01",
+    "sandimmune": "L04AD01",
+    "tacrolimus": "L04AD02",
+    "prograf": "L04AD02",
+    "imatinib": "L01EA01",
+    "gleevec": "L01EA01",
+    "glivec": "L01EA01",
+    "dasatinib": "L01EA02",
+    "sprycel": "L01EA02",
+    "ibrutinib": "L01EJ01",
+    "imbruvica": "L01EJ01",
+    "osimertinib": "L01EB04",
+    "tagrisso": "L01EB04",
+    "fingolimod": "L04AE01",
+    "gilenya": "L04AE01",
+    "baricitinib": "L04AJ01",
+    "olumiant": "L04AJ01",
+    "tofacitinib": "L04AA31",
+    "xeljanz": "L04AA31",
+    "mycophenolic acid": "L04AA06",
+    "cellcept": "L04AA06",
+    "myfortic": "L04AA06",
+    "natalizumab": "L04AA23",
+    "tysabri": "L04AA23",
+    "antineoplastic": "L01",
+    "immunosuppressant": "L04",
+    "immunosuppressants": "L04",
+    "tnf inhibitor": "L04AB",
+    "tnf-alpha inhibitor": "L04AB",
+    "tnf alpha inhibitor": "L04AB",
+    "tumor necrosis factor inhibitor": "L04AB",
+    "interleukin inhibitor": "L04AC",
+    "il inhibitor": "L04AC",
+    "kinase inhibitor": "L01E",
+    "tyrosine kinase inhibitor": "L01E",
+    "btk inhibitor": "L01EJ",
+    "egfr inhibitor": "L01EB",
+    "checkpoint inhibitor": "L01XC",
+    "pd-1 inhibitor": "L01XC",
+    "pd-l1 inhibitor": "L01XC",
+    "jak inhibitor": "L04AJ"
+  }
+}
