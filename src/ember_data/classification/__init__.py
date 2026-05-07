@@ -3,6 +3,7 @@
 from ember_data.classification.atc_resolver import ATCResolver
 from ember_data.classification.mesh_resolver import MeSHResolver
 from ember_data.classification.modality_resolver import ModalityResolver
+from ember_data.classification.uniprot_resolver import UniProtResolver
 from ember_data.classification.enums import (
     ATCNode,
     CellLineClass,
@@ -24,6 +25,7 @@ __all__ = [
     "ATCResolver",
     "MeSHResolver",
     "ModalityResolver",
+    "UniProtResolver",
     "CellLineClass",
     "ClassificationResolver",
     "DateWindow",
