@@ -8,6 +8,7 @@ from ember_data.classification.enums import (
     ModalityClassification,
     TargetClassification,
 )
+from ember_data.classification.resolver import ClassificationResolver
 from ember_data.classification.spec import (
     DateWindow,
     DisambiguationRequest,
@@ -18,6 +19,7 @@ from ember_data.classification.spec import (
 __all__ = [
     "ATCNode",
     "CellLineClass",
+    "ClassificationResolver",
     "DateWindow",
     "DisambiguationRequest",
     "Jurisdiction",
