@@ -1,6 +1,7 @@
 """Classification package — taxonomy enums, SearchSpec, and supporting types."""
 
 from ember_data.classification.atc_resolver import ATCResolver
+from ember_data.classification.mesh_resolver import MeSHResolver
 from ember_data.classification.modality_resolver import ModalityResolver
 from ember_data.classification.enums import (
     ATCNode,
@@ -21,6 +22,7 @@ from ember_data.classification.spec import (
 __all__ = [
     "ATCNode",
     "ATCResolver",
+    "MeSHResolver",
     "ModalityResolver",
     "CellLineClass",
     "ClassificationResolver",
