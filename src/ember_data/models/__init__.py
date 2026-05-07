@@ -3,6 +3,7 @@
 from ember_data.models.article import Article
 from ember_data.models.candidate import Candidate, CandidateScores
 from ember_data.models.patent import Patent
+from ember_data.models.provenance import SourceProvenance
 from ember_data.models.target import Target, TargetType
 from ember_data.models.trial import Trial, TrialPhase
 
@@ -11,6 +12,7 @@ __all__ = [
     "Candidate",
     "CandidateScores",
     "Patent",
+    "SourceProvenance",
     "Target",
     "TargetType",
     "Trial",

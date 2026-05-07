@@ -1,9 +1,12 @@
 """Candidate and CandidateScores domain models."""
 
+from datetime import datetime
+
 from pydantic import BaseModel, Field, model_validator
 
 from ember_data.models.article import Article
 from ember_data.models.patent import Patent
+from ember_data.models.provenance import SourceProvenance
 from ember_data.models.target import Target
 from ember_data.models.trial import Trial
 
@@ -23,6 +26,11 @@ class CandidateScores(BaseModel):
     weight_evidence_strength: float = 0.25
     weight_novelty: float = 0.2
 
+    # Dynamic retrieval scoring signals (optional; populated by semantic/structured search)
+    semantic_score: float | None = Field(default=None, ge=0, le=1)
+    structured_score: float | None = Field(default=None, ge=0, le=1)
+    evidence_score: float | None = Field(default=None, ge=0, le=1)
+
     @model_validator(mode="after")
     def compute_overall(self) -> "CandidateScores":
         """Compute overall score as weighted sum of dimensions."""
@@ -36,13 +44,24 @@ class CandidateScores(BaseModel):
 
 
 class Candidate(BaseModel):
-    """A scored, ranked result from the agent pipeline."""
+    """A scored, ranked result from the agent pipeline.
+
+    Supports both PLAN-001 structured results (target required) and dynamic
+    search results (target optional, drug_name/contributing_sources present).
+    """
 
     id: str
-    target: Target
+    target: Target | None = None
+    drug_name: str | None = None
     trials: list[Trial] = Field(default_factory=list)
     patents: list[Patent] = Field(default_factory=list)
     articles: list[Article] = Field(default_factory=list)
     scores: CandidateScores
     risk_flags: list[str] = Field(default_factory=list)
     confidence: float = Field(ge=0, le=1)
+
+    # Dynamic search result fields
+    matched_dimensions: list[str] = Field(default_factory=list)
+    contributing_sources: list[SourceProvenance] = Field(default_factory=list)
+    retrieved_at: datetime | None = None
+    synthesis_summary: str | None = None
