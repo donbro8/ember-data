@@ -31,10 +31,10 @@ jobs:
             --extra-index-url "https://oauth2accesstoken:$(gcloud auth print-access-token)@${{ vars.GCP_REGION }}-python.pkg.dev/${{ vars.GCP_PROJECT_ID }}/ember-bio-python/simple/"
 
       - name: Lint
-        run: uv run ruff check .
+        run: uv run --no-sources ruff check .
 
       - name: Format check
-        run: uv run ruff format --check .
+        run: uv run --no-sources ruff format --check .
 
       - name: Test with coverage
-        run: uv run pytest --cov=ember_data
+        run: uv run --no-sources pytest --cov=ember_data

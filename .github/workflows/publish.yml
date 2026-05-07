@@ -34,5 +34,5 @@ jobs:
       - name: Publish to Artifact Registry
         run: |
           uv tool run twine upload \
-            --repository-url https://${{ vars.GCP_REGION }}-python.pkg.dev/${{ vars.GCP_PROJECT_ID }}/ember-python/ \
+            --repository-url https://${{ vars.GCP_REGION }}-python.pkg.dev/${{ vars.GCP_PROJECT_ID }}/ember-bio-python/ \
             dist/*
