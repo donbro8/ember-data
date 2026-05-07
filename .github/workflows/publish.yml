@@ -29,7 +29,7 @@ jobs:
         run: uv build
 
       - name: Install twine
-        run: uv tool install twine[keyring] keyrings.google-artifactregistry-auth
+        run: uv tool install twine[keyring] --with keyrings.google-artifactregistry-auth
 
       - name: Publish to Artifact Registry
         run: |
