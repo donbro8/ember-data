@@ -389,7 +389,7 @@ wheels = [
 
 [[package]]
 name = "ember-bio-data"
-version = "0.1.5"
+version = "0.1.6"
 source = { editable = "." }
 dependencies = [
     { name = "ember-bio-shared" },
