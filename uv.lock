@@ -389,7 +389,7 @@ wheels = [
 
 [[package]]
 name = "ember-bio-data"
-version = "0.1.0"
+version = "0.1.5"
 source = { editable = "." }
 dependencies = [
     { name = "ember-bio-shared" },
@@ -421,7 +421,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "ember-bio-shared"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "../ember-shared" }
 dependencies = [
     { name = "pydantic" },
