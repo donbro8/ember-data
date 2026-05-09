@@ -17,3 +17,5 @@ class Patent(BaseModel):
     grant_date: date | None = None
     cited_by_count: int = 0
     relevant_targets: list[str] = Field(default_factory=list)
+    jurisdiction: str | None = None
+    country_code: str | None = None

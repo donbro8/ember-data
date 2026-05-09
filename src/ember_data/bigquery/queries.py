@@ -149,6 +149,7 @@ def patent_search_query(
     p.filing_date,
     p.grant_date,
     p.country_code,
+    REGEXP_EXTRACT(p.publication_number, r'^([A-Z]{{2}})') AS country_code_from_pub,
     {_DERIVED_EXPIRY_EXPR} AS derived_expiry,
     TRUE AS expiry_approximate
 FROM `{PATENTS_DATASET.dataset_id}.publications` p,

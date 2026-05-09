@@ -2,17 +2,26 @@
 
 from __future__ import annotations
 
-from ember_data.seed.schema import MabEntry
+import json
+from importlib import resources
+
+from ember_data.seed.schema import BiologicEntry
 
 
-def load_mab_reference() -> list[MabEntry]:
-    """Load the curated mAb reference seed dataset.
-
-    Returns an empty list when no seed file is configured (e.g. local dev
-    without the BigQuery-backed seed).
-    """
-    # TODO: load from JSON/CSV seed file or BigQuery materialised view
-    return []
+def load_biologic_reference() -> list[BiologicEntry]:
+    """Load the curated biologic reference seed dataset."""
+    seed_file = resources.files("ember_data.seed").joinpath("biologic_reference.json")
+    raw = json.loads(seed_file.read_text(encoding="utf-8"))
+    return [BiologicEntry.model_validate(entry) for entry in raw]
 
 
-__all__ = ["MabEntry", "load_mab_reference"]
+# Backward-compatible aliases
+MabEntry = BiologicEntry
+load_mab_reference = load_biologic_reference
+
+__all__ = [
+    "BiologicEntry",
+    "MabEntry",
+    "load_biologic_reference",
+    "load_mab_reference",
+]

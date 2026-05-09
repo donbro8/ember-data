@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import logging
+
 from google.cloud import bigquery
+
+logger = logging.getLogger(__name__)
 
 from ember_data.bigquery.queries import fda_drug_events_query, patent_search_query
 from ember_data.classification.spec import DateWindow
@@ -35,9 +39,20 @@ class BigQueryClient:
         Returns:
             List of result rows as dictionaries.
         """
-        query = fda_drug_events_query(drug_names, therapeutic_area, limit)
-        job = self._client.query(query)
-        return [dict(row.items()) for row in job.result()]
+        logger.info(
+            "Executing FDA drug events query: drug_names=%r, limit=%d",
+            drug_names,
+            limit,
+        )
+        try:
+            query = fda_drug_events_query(drug_names, therapeutic_area, limit)
+            job = self._client.query(query)
+            results = [dict(row.items()) for row in job.result()]
+            logger.info("FDA drug events query returned %d results", len(results))
+            return results
+        except Exception as exc:
+            logger.error("FDA drug events query failed: %s", exc)
+            return []
 
     def search_patents(
         self,
@@ -63,6 +78,13 @@ class BigQueryClient:
             List of result rows as dictionaries, each containing
             ``derived_expiry`` and ``expiry_approximate``.
         """
-        sql = patent_search_query(query, limit, date_window, jurisdictions)
-        job = self._client.query(sql)
-        return [dict(row.items()) for row in job.result()]
+        logger.info("Executing patent search: query=%r, limit=%d", query, limit)
+        try:
+            sql = patent_search_query(query, limit, date_window, jurisdictions)
+            job = self._client.query(sql)
+            results = [dict(row.items()) for row in job.result()]
+            logger.info("Patent search returned %d results", len(results))
+            return results
+        except Exception as exc:
+            logger.error("Patent search failed: %s", exc)
+            return []
