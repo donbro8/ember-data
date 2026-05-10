@@ -1,0 +1,114 @@
+{
+  "studies": [
+    {
+      "protocolSection": {
+        "identificationModule": {
+          "nctId": "NCT04567890",
+          "officialTitle": "A Phase III Study of ABP 501 (Adalimumab Biosimilar) in Subjects With Moderate to Severe Rheumatoid Arthritis",
+          "briefTitle": "ABP 501 Biosimilar Study"
+        },
+        "designModule": {
+          "phases": ["PHASE3"]
+        },
+        "statusModule": {
+          "overallStatus": "COMPLETED",
+          "startDateStruct": {
+            "date": "2022-06-15"
+          }
+        },
+        "conditionsModule": {
+          "conditions": ["Rheumatoid Arthritis"]
+        },
+        "armsInterventionsModule": {
+          "interventions": [
+            {"name": "ABP 501"},
+            {"name": "Adalimumab"}
+          ]
+        },
+        "sponsorCollaboratorsModule": {
+          "leadSponsor": {
+            "name": "Amgen Inc."
+          }
+        },
+        "outcomesModule": {
+          "primaryOutcomes": [
+            {"measure": "ACR20 Response Rate at Week 24"}
+          ]
+        }
+      }
+    },
+    {
+      "protocolSection": {
+        "identificationModule": {
+          "nctId": "NCT04567891",
+          "officialTitle": "A Phase I Pharmacokinetic Study Comparing SB5 to Adalimumab in Healthy Volunteers",
+          "briefTitle": "SB5 PK Study"
+        },
+        "designModule": {
+          "phases": ["PHASE1"]
+        },
+        "statusModule": {
+          "overallStatus": "COMPLETED",
+          "startDateStruct": {
+            "date": "2021-03-01"
+          }
+        },
+        "conditionsModule": {
+          "conditions": ["Healthy Volunteers"]
+        },
+        "armsInterventionsModule": {
+          "interventions": [
+            {"name": "SB5"},
+            {"name": "Adalimumab"}
+          ]
+        },
+        "sponsorCollaboratorsModule": {
+          "leadSponsor": {
+            "name": "Samsung Bioepis Co., Ltd."
+          }
+        },
+        "outcomesModule": {
+          "primaryOutcomes": [
+            {"measure": "AUC(0-inf) of SB5 and Adalimumab"}
+          ]
+        }
+      }
+    },
+    {
+      "protocolSection": {
+        "identificationModule": {
+          "nctId": "NCT04567892",
+          "officialTitle": "A Phase IV Post-Marketing Study of CT-P17 Adalimumab Biosimilar",
+          "briefTitle": "CT-P17 Post-Marketing"
+        },
+        "designModule": {
+          "phases": ["PHASE4"]
+        },
+        "statusModule": {
+          "overallStatus": "RECRUITING",
+          "startDateStruct": {
+            "date": "2024-01-10"
+          }
+        },
+        "conditionsModule": {
+          "conditions": ["Plaque Psoriasis"]
+        },
+        "armsInterventionsModule": {
+          "interventions": [
+            {"name": "CT-P17"}
+          ]
+        },
+        "sponsorCollaboratorsModule": {
+          "leadSponsor": {
+            "name": "Celltrion Inc."
+          }
+        },
+        "outcomesModule": {
+          "primaryOutcomes": [
+            {"measure": "PASI 75 at Week 16"}
+          ]
+        }
+      }
+    }
+  ]
+}

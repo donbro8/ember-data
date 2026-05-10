@@ -1,0 +1,62 @@
+[
+  {
+    "openfda_generic_name": "adalimumab",
+    "openfda_brand_name": "HUMIRA",
+    "openfda_manufacturer_name": "AbbVie Inc.",
+    "openfda_product_type": "BLA"
+  },
+  {
+    "openfda_generic_name": "trastuzumab",
+    "openfda_brand_name": "HERCEPTIN",
+    "openfda_manufacturer_name": "Genentech, Inc.",
+    "openfda_product_type": "BLA"
+  },
+  {
+    "openfda_generic_name": "nivolumab",
+    "openfda_brand_name": "OPDIVO",
+    "openfda_manufacturer_name": "Bristol-Myers Squibb Company",
+    "openfda_product_type": "BIOLOGIC"
+  },
+  {
+    "openfda_generic_name": "etanercept",
+    "openfda_brand_name": "ENBREL",
+    "openfda_manufacturer_name": "Amgen Inc.",
+    "openfda_product_type": "BLA"
+  },
+  {
+    "openfda_generic_name": "insulin glargine",
+    "openfda_brand_name": "LANTUS",
+    "openfda_manufacturer_name": "Sanofi-Aventis U.S. LLC",
+    "openfda_product_type": "BLA"
+  },
+  {
+    "openfda_generic_name": "filgrastim",
+    "openfda_brand_name": "NEUPOGEN",
+    "openfda_manufacturer_name": "Amgen Inc.",
+    "openfda_product_type": "BLA"
+  },
+  {
+    "openfda_generic_name": "interferon beta-1a",
+    "openfda_brand_name": "AVONEX",
+    "openfda_manufacturer_name": "Biogen Inc.",
+    "openfda_product_type": "BIOLOGIC"
+  },
+  {
+    "openfda_generic_name": "acetaminophen",
+    "openfda_brand_name": "TYLENOL",
+    "openfda_manufacturer_name": "Johnson & Johnson",
+    "openfda_product_type": "NDA"
+  },
+  {
+    "openfda_generic_name": "trastuzumab emtansine",
+    "openfda_brand_name": "KADCYLA",
+    "openfda_manufacturer_name": "Genentech, Inc.",
+    "openfda_product_type": "BLA"
+  },
+  {
+    "openfda_generic_name": "agalsidase beta",
+    "openfda_brand_name": "FABRAZYME",
+    "openfda_manufacturer_name": "Sanofi Genzyme",
+    "openfda_product_type": "BLA"
+  }
+]

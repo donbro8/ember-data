@@ -1,0 +1,42 @@
+[
+  {
+    "publication_number": "US-10234567-B2",
+    "title": "Anti-TNF antibody compositions and methods of use for adalimumab",
+    "abstract": "The present invention relates to anti-TNF antibody formulations for adalimumab...",
+    "filing_date": 20150315,
+    "grant_date": 20190101,
+    "country_code": "US",
+    "derived_expiry": "2035-03-15",
+    "expiry_approximate": true
+  },
+  {
+    "publication_number": "EP-3456789-A1",
+    "title": "Biosimilar formulations of adalimumab with improved stability",
+    "abstract": "A stable liquid formulation of adalimumab biosimilar...",
+    "filing_date": 20160722,
+    "grant_date": 20200501,
+    "country_code": "EU",
+    "derived_expiry": "2036-07-22",
+    "expiry_approximate": true
+  },
+  {
+    "publication_number": "JP-6789012-B2",
+    "title": "Method for producing high-concentration adalimumab formulation",
+    "abstract": "A method for producing a high-concentration formulation of an anti-TNF alpha antibody...",
+    "filing_date": 20170905,
+    "grant_date": 20210315,
+    "country_code": "JP",
+    "derived_expiry": "2037-09-05",
+    "expiry_approximate": true
+  },
+  {
+    "publication_number": "XX-1111111-A1",
+    "title": "Adalimumab variant with improved binding affinity",
+    "abstract": "Novel adalimumab variants...",
+    "filing_date": 20180101,
+    "grant_date": 20220601,
+    "country_code": "XX",
+    "derived_expiry": "2038-01-01",
+    "expiry_approximate": true
+  }
+]

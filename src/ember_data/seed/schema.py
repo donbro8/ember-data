@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
@@ -50,6 +50,8 @@ class BiologicEntry(BaseModel):
     biosimilar_competitors: list[str] = Field(default_factory=list)
     has_approved_biosimilar: bool = False
     notes: str = ""
+    last_updated: date | None = None
+    source: str = "manual"
 
     @model_validator(mode="before")
     @classmethod
@@ -86,3 +88,12 @@ class BiologicEntry(BaseModel):
 
 # Backward-compatible alias so existing imports still work.
 MabEntry = BiologicEntry
+
+
+class VersionedSeedFile(BaseModel):
+    """Versioned wrapper around the biologic seed dataset."""
+
+    data_version: int
+    last_enrichment_run: datetime | None = None
+    entry_count: int
+    entries: list[BiologicEntry]
