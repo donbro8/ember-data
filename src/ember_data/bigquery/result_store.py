@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import logging
 from dataclasses import dataclass
@@ -178,7 +179,7 @@ class ResultWriter:
             "watch_id": watch_id,
             "full_markdown": markdown,
             "bytes_scanned": bytes_scanned,
-            "execution_trace": json.dumps(trace) if trace is not None else None,
+            "execution_trace": json.dumps(dataclasses.asdict(trace) if dataclasses.is_dataclass(trace) else trace) if trace is not None else None,
             "created_at": created_at.isoformat(),
             "change_summary": change_summary,
         }
