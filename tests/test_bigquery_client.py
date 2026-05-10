@@ -282,3 +282,76 @@ class TestBigQueryClient:
         query_arg = mock_client.query.call_args[0][0]
         assert today.isoformat() in query_arg
         assert ">=" in query_arg
+
+
+class TestBigQueryClientCostControls:
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_default_maximum_bytes_billed(self, mock_bq_class):
+        client = BigQueryClient(project_id="test-project")
+        assert client.maximum_bytes_billed == 1_000_000_000
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_custom_maximum_bytes_billed(self, mock_bq_class):
+        client = BigQueryClient(project_id="test-project", maximum_bytes_billed=500_000_000)
+        assert client.maximum_bytes_billed == 500_000_000
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_fda_query_passes_job_config(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        mock_job = MagicMock()
+        mock_job.result.return_value = []
+        mock_client.query.return_value = mock_job
+
+        client = BigQueryClient(project_id="test-project", maximum_bytes_billed=200_000_000)
+        client.query_fda_drug_events(["aspirin"])
+
+        call_kwargs = mock_client.query.call_args[1]
+        assert "job_config" in call_kwargs
+        assert call_kwargs["job_config"].maximum_bytes_billed == 200_000_000
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_patent_query_passes_job_config(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        mock_job = MagicMock()
+        mock_job.result.return_value = []
+        mock_client.query.return_value = mock_job
+
+        client = BigQueryClient(project_id="test-project", maximum_bytes_billed=300_000_000)
+        client.search_patents("KRAS inhibitor")
+
+        call_kwargs = mock_client.query.call_args[1]
+        assert "job_config" in call_kwargs
+        assert call_kwargs["job_config"].maximum_bytes_billed == 300_000_000
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_dry_run_estimate_returns_bytes(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        mock_job = MagicMock()
+        mock_job.total_bytes_processed = 42_000_000
+        mock_client.query.return_value = mock_job
+
+        client = BigQueryClient(project_id="test-project")
+        estimate = client.dry_run_estimate("SELECT 1")
+
+        assert estimate == 42_000_000
+        call_kwargs = mock_client.query.call_args[1]
+        assert call_kwargs["job_config"].dry_run is True
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_dry_run_estimate_none_returns_zero(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        mock_job = MagicMock()
+        mock_job.total_bytes_processed = None
+        mock_client.query.return_value = mock_job
+
+        client = BigQueryClient(project_id="test-project")
+        estimate = client.dry_run_estimate("SELECT 1")
+        assert estimate == 0
