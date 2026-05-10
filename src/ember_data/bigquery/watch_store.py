@@ -137,8 +137,16 @@ class WatchStore:
         Raises:
             ValueError: If the watch_id does not exist.
         """
+        _ALLOWED_UPDATE_FIELDS = frozenset({
+            "name", "query", "schedule", "schedule_day",
+            "enabled", "notify_on_change", "updated_at",
+        })
         now = _now_utc()
         fields["updated_at"] = now.isoformat()
+
+        invalid = set(fields) - _ALLOWED_UPDATE_FIELDS
+        if invalid:
+            raise ValueError(f"Invalid update fields: {invalid}")
 
         set_clauses = ", ".join(f"{key} = @{key}" for key in fields)
         params: dict[str, object] = {"watch_id": watch_id}

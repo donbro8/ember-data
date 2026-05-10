@@ -131,6 +131,13 @@ class ChangeDetector:
         current_rows = self._fetch_run(current_run_id)
         previous_rows = self._fetch_run(previous_run_id)
 
+        if not current_rows:
+            logger.warning(
+                "detect_changes: current run %s returned no rows — skipping to avoid false removals",
+                current_run_id,
+            )
+            return []
+
         current_by_id: dict[str, dict] = {r["canonical_id"]: r for r in current_rows}
         previous_by_id: dict[str, dict] = {r["canonical_id"]: r for r in previous_rows}
 

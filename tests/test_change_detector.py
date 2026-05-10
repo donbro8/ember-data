@@ -92,24 +92,41 @@ class TestNewCandidate:
 
 class TestRemovedCandidate:
     def test_detects_removed_candidate(self) -> None:
+        current = [_base_row(canonical_id="candidate-003", display_label="Drug C")]
+        previous = [
+            _base_row(canonical_id="candidate-002", display_label="Drug B"),
+            _base_row(canonical_id="candidate-003", display_label="Drug C"),
+        ]
+        detector, _ = _make_detector(current, previous)
+
+        changes = detector.detect_changes(_WATCH_ID, _CURRENT_RUN, _PREV_RUN)
+
+        removed = [c for c in changes if c.change_type == ChangeType.REMOVED_CANDIDATE.value]
+        assert len(removed) == 1
+        assert removed[0].canonical_id == "candidate-002"
+
+    def test_removed_candidate_detail_format(self) -> None:
+        current = [_base_row(canonical_id="candidate-other", display_label="Other")]
+        previous = [
+            _base_row(canonical_id="candidate-other", display_label="Other"),
+            _base_row(display_label="Old Drug"),
+        ]
+        detector, _ = _make_detector(current, previous)
+
+        changes = detector.detect_changes(_WATCH_ID, _CURRENT_RUN, _PREV_RUN)
+
+        removed = [c for c in changes if c.change_type == ChangeType.REMOVED_CANDIDATE.value]
+        assert removed[0].detail == "Removed: Old Drug"
+
+    def test_empty_current_run_skips_detection(self) -> None:
+        """An empty current run should return no changes to avoid false removal flood."""
         current: list[dict] = []
         previous = [_base_row(canonical_id="candidate-002", display_label="Drug B")]
         detector, _ = _make_detector(current, previous)
 
         changes = detector.detect_changes(_WATCH_ID, _CURRENT_RUN, _PREV_RUN)
 
-        assert len(changes) == 1
-        assert changes[0].change_type == ChangeType.REMOVED_CANDIDATE.value
-        assert changes[0].canonical_id == "candidate-002"
-
-    def test_removed_candidate_detail_format(self) -> None:
-        current: list[dict] = []
-        previous = [_base_row(display_label="Old Drug")]
-        detector, _ = _make_detector(current, previous)
-
-        changes = detector.detect_changes(_WATCH_ID, _CURRENT_RUN, _PREV_RUN)
-
-        assert changes[0].detail == "Removed: Old Drug"
+        assert len(changes) == 0
 
 
 # ---------------------------------------------------------------------------
