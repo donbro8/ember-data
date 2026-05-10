@@ -49,17 +49,33 @@ def test_canonical_id_fda_generic_name_normalized():
     )
     result_by_generic = CandidateResult(fda_generic_name="adalimumab")
     assert result_by_brand.canonical_id == result_by_generic.canonical_id
-    assert result_by_brand.canonical_id == "adalimumab"
+    assert result_by_brand.canonical_id == "fda:adalimumab"
 
 
 def test_canonical_id_fda_generic_name_strips_spaces():
     result = CandidateResult(fda_generic_name="adali mumab")
-    assert result.canonical_id == "adalimumab"
+    assert result.canonical_id == "fda:adalimumab"
 
 
 def test_canonical_id_fda_generic_name_lowercased():
     result = CandidateResult(fda_generic_name="Adalimumab")
-    assert result.canonical_id == "adalimumab"
+    assert result.canonical_id == "fda:adalimumab"
+
+
+def test_canonical_id_fda_prefix():
+    """Tier 1 canonical IDs always start with 'fda:'."""
+    result = CandidateResult(fda_generic_name="trastuzumab")
+    assert result.canonical_id.startswith("fda:")
+
+
+def test_canonical_id_fda_unicode_nfc():
+    """NFC normalization is applied before lowercase/strip."""
+    import unicodedata
+
+    # é as decomposed (e + combining accent) vs precomposed
+    nfc_name = unicodedata.normalize("NFC", "adalimumab")
+    result = CandidateResult(fda_generic_name=nfc_name)
+    assert result.canonical_id == "fda:adalimumab"
 
 
 # ---------------------------------------------------------------------------
@@ -69,13 +85,28 @@ def test_canonical_id_fda_generic_name_lowercased():
 
 def test_canonical_id_drug_and_target():
     result = CandidateResult(drug_name="Humira", target="TNF-alpha")
-    assert result.canonical_id == "humira_tnf-alpha"
+    assert result.canonical_id == "drug:humira|target:tnf-alpha"
 
 
 def test_canonical_id_drug_and_target_normalized():
     result_a = CandidateResult(drug_name="Humira", target="TNF alpha")
     result_b = CandidateResult(drug_name="HUMIRA", target="tnf alpha")
     assert result_a.canonical_id == result_b.canonical_id
+
+
+def test_canonical_id_tier2_pipe_separator():
+    """Tier 2 canonical IDs use '|' as separator between drug and target parts."""
+    result = CandidateResult(drug_name="Humira", target="TNF-alpha")
+    assert "|" in result.canonical_id
+    parts = result.canonical_id.split("|")
+    assert len(parts) == 2
+
+
+def test_canonical_id_tier2_sorted_parts():
+    """Tier 2 parts are sorted lexicographically (drug: < target: always)."""
+    result = CandidateResult(drug_name="zzzdrug", target="aaatarget")
+    parts = result.canonical_id.split("|")
+    assert parts == sorted(parts)
 
 
 # ---------------------------------------------------------------------------
@@ -141,7 +172,7 @@ def test_display_label_never_none_for_target():
 
 def test_build_canonical_id_called_directly():
     result = CandidateResult(fda_generic_name="trastuzumab")
-    assert build_canonical_id(result) == "trastuzumab"
+    assert build_canonical_id(result) == "fda:trastuzumab"
 
 
 # ---------------------------------------------------------------------------

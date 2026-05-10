@@ -65,3 +65,25 @@ class Candidate(BaseModel):
     contributing_sources: list[SourceProvenance] = Field(default_factory=list)
     retrieved_at: datetime | None = None
     synthesis_summary: str | None = None
+
+    # Identity enrichment
+    brand_names: list[str] = Field(default_factory=list)
+    originator: str | None = None
+    modality: str | None = None
+    category: str | None = None
+    target_aliases: list[str] = Field(default_factory=list)
+
+    # Commercial
+    annual_revenue_usd_millions: float | None = None
+    revenue_year: int | None = None
+    biosimilar_competitors: list[str] = Field(default_factory=list)
+    has_approved_biosimilar: bool = False
+
+    # Indications
+    indications: list[str] = Field(default_factory=list)
+
+    # FDA
+    fda_generic_name: str | None = None
+    fda_brand_name: str | None = None
+    fda_manufacturer: str | None = None
+    fda_therapeutic_area: str | None = None

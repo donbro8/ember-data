@@ -2,6 +2,7 @@
 
 import hashlib
 import re
+import unicodedata
 from datetime import date
 from enum import Enum
 from typing import Literal
@@ -44,6 +45,28 @@ class PatentJurisdiction(BaseModel):
     url: str
 
 
+class TrialSummary(BaseModel):
+    """Lightweight summary of a clinical trial for embedding in CandidateResult."""
+
+    nct_id: str
+    phase: str
+    status: str
+    indication: str | None = None
+    sponsor: str | None = None
+    url: str | None = None
+
+
+class ArticleSummary(BaseModel):
+    """Lightweight summary of a scientific article; pmid is nullable for preprints."""
+
+    pmid: str | None = None
+    title: str
+    journal: str | None = None
+    year: int | None = None
+    doi: str | None = None
+    url: str | None = None
+
+
 class ResultType(str, Enum):
     """Classification of a CandidateResult as a drug or target entity."""
 
@@ -52,23 +75,27 @@ class ResultType(str, Enum):
 
 
 def _normalize(text: str) -> str:
-    """Lowercase and strip all whitespace from a string."""
-    return re.sub(r"\s+", "", text.lower())
+    """Apply Unicode NFC normalization, then lowercase and strip all whitespace."""
+    nfc = unicodedata.normalize("NFC", text)
+    return re.sub(r"\s+", "", nfc.lower())
 
 
 def build_canonical_id(result: "CandidateResult") -> str:
     """Return a stable canonical identifier for a CandidateResult.
 
     Three-tier fallback:
-    1. fda_generic_name present → normalize to lowercase, strip spaces
-    2. drug_name + target present → ``{drug_name}_{target}`` normalized
+    1. fda_generic_name present → ``fda:{name}`` normalized
+    2. drug_name + target present → ``drug:{name}|target:{name}`` sorted
     3. Otherwise → SHA-256 hash of sorted source IDs
     """
     if result.fda_generic_name:
-        return _normalize(result.fda_generic_name)
+        return f"fda:{_normalize(result.fda_generic_name)}"
 
     if result.drug_name and result.target:
-        return _normalize(f"{result.drug_name}_{result.target}")
+        drug_part = f"drug:{_normalize(result.drug_name)}"
+        target_part = f"target:{_normalize(result.target)}"
+        parts = sorted([drug_part, target_part])
+        return "|".join(parts)
 
     # Tier 3: hash of sorted source IDs
     sorted_ids = sorted(result.sources_contributed)
@@ -102,11 +129,42 @@ class CandidateResult(BaseModel):
     source_urls: list[str] = Field(default_factory=list)
 
     # Optional enrichment fields
-    indication: str | None = None
+    indication: list[str] = Field(default_factory=list)
     mechanism_of_action: str | None = None
     clinical_stage: str | None = None
     risk_flags: list[str] = Field(default_factory=list)
     synthesis_summary: str | None = None
+
+    # Score breakdown
+    structured_score: float | None = None
+    semantic_score: float | None = None
+    evidence_score: float | None = None
+
+    # Identity enrichment
+    brand_names: list[str] = Field(default_factory=list)
+    originator: str | None = None
+    target_aliases: list[str] = Field(default_factory=list)
+    modality: str | None = None
+    category: str | None = None
+
+    # Evidence
+    trials: list[TrialSummary] = Field(default_factory=list)
+    trial_count: int = 0
+    latest_trial_phase: str | None = None
+    articles: list[ArticleSummary] = Field(default_factory=list)
+    article_count: int = 0
+
+    # Commercial
+    annual_revenue_usd_millions: float | None = None
+    revenue_year: int | None = None
+    biosimilar_competitors: list[str] = Field(default_factory=list)
+    biosimilar_competitor_count: int = 0
+    has_approved_biosimilar: bool = False
+
+    # FDA
+    fda_brand_name: str | None = None
+    fda_manufacturer: str | None = None
+    fda_therapeutic_area: str | None = None
 
     @model_validator(mode="after")
     def compute_derived_fields(self) -> "CandidateResult":
