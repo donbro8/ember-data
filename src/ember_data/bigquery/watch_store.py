@@ -54,6 +54,9 @@ class WatchStore:
     ) -> WatchConfig:
         """Create a new WatchConfig and persist it to BigQuery.
 
+        Uses DML INSERT (not streaming insert) so the row is immediately
+        available for UPDATE/DELETE operations.
+
         Args:
             name: Human-readable name for the watch.
             query: The query string to watch.
@@ -77,8 +80,28 @@ class WatchStore:
             updated_at=now,
             notify_on_change=notify_on_change,
         )
-        row = config.model_dump(mode="json")
-        self._client.insert_rows(self._table, [row])
+        schedule_day_expr = "@schedule_day" if schedule_day is not None else "NULL"
+        sql = f"""
+            INSERT INTO `{self._table}`
+            (watch_id, name, query, schedule, schedule_day, enabled,
+             created_at, updated_at, last_run_id, last_run_at, notify_on_change)
+            VALUES
+            (@watch_id, @name, @query, @schedule, {schedule_day_expr}, @enabled,
+             @created_at, @updated_at, NULL, NULL, @notify_on_change)
+        """
+        params: dict[str, object] = {
+            "watch_id": watch_id,
+            "name": name,
+            "query": query,
+            "schedule": schedule,
+            "enabled": True,
+            "created_at": now.isoformat(),
+            "updated_at": now.isoformat(),
+            "notify_on_change": notify_on_change,
+        }
+        if schedule_day is not None:
+            params["schedule_day"] = schedule_day
+        self._client.query_with_params(sql, params)
         logger.info("Created watch config watch_id=%s name=%r", watch_id, name)
         return config
 

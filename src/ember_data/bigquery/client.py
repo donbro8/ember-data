@@ -184,15 +184,30 @@ class BigQueryClient:
         """
         query_params = []
         for name, value in (params or {}).items():
-            if isinstance(value, int):
+            if value is None:
+                # BigQuery needs a typed NULL; default to STRING for untyped nulls
+                query_params.append(
+                    bigquery.ScalarQueryParameter(name, "STRING", None)
+                )
+            elif isinstance(value, bool):
+                # Must check bool before int (bool is a subclass of int)
+                query_params.append(
+                    bigquery.ScalarQueryParameter(name, "BOOL", value)
+                )
+            elif isinstance(value, int):
                 param_type = "INT64"
+                query_params.append(
+                    bigquery.ScalarQueryParameter(name, param_type, value)
+                )
             elif isinstance(value, float):
-                param_type = "FLOAT64"
+                query_params.append(
+                    bigquery.ScalarQueryParameter(name, "FLOAT64", value)
+                )
             else:
-                param_type = "STRING"
-            query_params.append(
-                bigquery.ScalarQueryParameter(name, param_type, value)
-            )
+                query_params.append(
+                    bigquery.ScalarQueryParameter(name, "STRING", value)
+                )
+
         job_config = bigquery.QueryJobConfig(
             query_parameters=query_params,
             maximum_bytes_billed=self.maximum_bytes_billed,

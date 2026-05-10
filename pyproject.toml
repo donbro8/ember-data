@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ember-bio-data"
-version = "0.2.1"
+version = "0.2.2"
 description = "BigQuery access, domain models, vector search, and ingestion for Ember Bio"
 requires-python = ">=3.11"
 dependencies = [

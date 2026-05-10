@@ -296,7 +296,7 @@ class ResultReader:
         return results
 
     def list_runs(
-        self, watch_id: str | None = None, limit: int = 20
+        self, watch_id: str | None = None, limit: int | None = 20
     ) -> list[dict]:
         """List recent runs from the summary table.
 
@@ -313,11 +313,13 @@ class ResultReader:
             where_clause = "WHERE watch_id = @watch_id"
             params["watch_id"] = watch_id
 
+        effective_limit = int(limit) if limit is not None else 20
+
         sql = f"""
             SELECT run_id, query, query_type, watch_id, created_at, bytes_scanned
             FROM `{self._dataset}.{_RUN_SUMMARY_TABLE}`
             {where_clause}
             ORDER BY created_at DESC
-            LIMIT {int(limit)}
+            LIMIT {effective_limit}
         """
         return self._client.query_with_params(sql, params)
