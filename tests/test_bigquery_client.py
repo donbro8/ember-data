@@ -3,7 +3,10 @@
 from datetime import date
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from ember_data.bigquery import BigQueryClient
+from ember_data.bigquery.client import QueryTooExpensiveError
 from ember_data.bigquery.datasets import (
     FDA_DRUG_DATASET,
     NIH_CITATIONS_DATASET,
@@ -198,13 +201,15 @@ class TestBigQueryClient:
             ("expiry_approximate", True),
         ]
         mock_job = MagicMock()
+        mock_job.total_bytes_processed = 0
         mock_job.result.return_value = [mock_row]
         mock_client.query.return_value = mock_job
 
         client = BigQueryClient(project_id="test-project")
         results = client.search_patents("KRAS inhibitor", limit=5)
 
-        mock_client.query.assert_called_once()
+        # Two calls now: dry-run estimate + actual query
+        assert mock_client.query.call_count == 2
         query_arg = mock_client.query.call_args[0][0]
         assert "KRAS inhibitor" in query_arg
         assert "5" in query_arg
@@ -218,6 +223,7 @@ class TestBigQueryClient:
         mock_bq_class.return_value = mock_client
 
         mock_job = MagicMock()
+        mock_job.total_bytes_processed = 0
         mock_job.result.return_value = []
         mock_client.query.return_value = mock_job
 
@@ -225,6 +231,7 @@ class TestBigQueryClient:
         client = BigQueryClient(project_id="test-project")
         client.search_patents("oncology", date_window=window)
 
+        # call_args is the last call — the actual query (not the dry-run)
         query_arg = mock_client.query.call_args[0][0]
         assert "2030-01-01" in query_arg
         assert "INTERVAL 20 YEAR" in query_arg
@@ -235,6 +242,7 @@ class TestBigQueryClient:
         mock_bq_class.return_value = mock_client
 
         mock_job = MagicMock()
+        mock_job.total_bytes_processed = 0
         mock_job.result.return_value = []
         mock_client.query.return_value = mock_job
 
@@ -256,6 +264,7 @@ class TestBigQueryClient:
             ("expiry_approximate", True),
         ]
         mock_job = MagicMock()
+        mock_job.total_bytes_processed = 0
         mock_job.result.return_value = [mock_row]
         mock_client.query.return_value = mock_job
 
@@ -271,6 +280,7 @@ class TestBigQueryClient:
         mock_bq_class.return_value = mock_client
 
         mock_job = MagicMock()
+        mock_job.total_bytes_processed = 0
         mock_job.result.return_value = []
         mock_client.query.return_value = mock_job
 
@@ -317,12 +327,14 @@ class TestBigQueryClientCostControls:
         mock_bq_class.return_value = mock_client
 
         mock_job = MagicMock()
+        mock_job.total_bytes_processed = 0
         mock_job.result.return_value = []
         mock_client.query.return_value = mock_job
 
         client = BigQueryClient(project_id="test-project", maximum_bytes_billed=300_000_000)
         client.search_patents("KRAS inhibitor")
 
+        # call_args is the last call — the actual query (not the dry-run)
         call_kwargs = mock_client.query.call_args[1]
         assert "job_config" in call_kwargs
         assert call_kwargs["job_config"].maximum_bytes_billed == 300_000_000
@@ -355,3 +367,132 @@ class TestBigQueryClientCostControls:
         client = BigQueryClient(project_id="test-project")
         estimate = client.dry_run_estimate("SELECT 1")
         assert estimate == 0
+
+
+class TestBigQueryClientManagedDataset:
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_search_patents_with_managed_dataset_uses_managed_table(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        mock_job = MagicMock()
+        mock_job.result.return_value = []
+        mock_client.query.return_value = mock_job
+
+        client = BigQueryClient(project_id="test-project", managed_dataset="ember_dev")
+        client.search_patents("KRAS inhibitor")
+
+        query_arg = mock_client.query.call_args[0][0]
+        # Managed table path does not use UNNEST
+        assert "ember_dev" in query_arg
+        assert "UNNEST" not in query_arg
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_search_patents_without_managed_dataset_uses_public_table(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        # First call is dry-run (returns an int), second is actual query
+        mock_dry_run_job = MagicMock()
+        mock_dry_run_job.total_bytes_processed = 100_000
+        mock_query_job = MagicMock()
+        mock_query_job.result.return_value = []
+        mock_client.query.side_effect = [mock_dry_run_job, mock_query_job]
+
+        client = BigQueryClient(project_id="test-project")
+        client.search_patents("KRAS inhibitor")
+
+        # Two calls: dry-run + actual
+        assert mock_client.query.call_count == 2
+        actual_query_arg = mock_client.query.call_args_list[1][0][0]
+        # Public dataset path uses UNNEST
+        assert "UNNEST" in actual_query_arg
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_fda_drug_events_with_managed_dataset_uses_managed_table(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        mock_job = MagicMock()
+        mock_job.result.return_value = []
+        mock_client.query.return_value = mock_job
+
+        client = BigQueryClient(project_id="test-project", managed_dataset="ember_dev")
+        client.query_fda_drug_events(["aspirin"])
+
+        query_arg = mock_client.query.call_args[0][0]
+        assert "ember_dev" in query_arg
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_dry_run_gating_raises_when_exceeds_threshold(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        # dry_run_estimate returns 6 GB — above the 5 GB threshold
+        mock_dry_run_job = MagicMock()
+        mock_dry_run_job.total_bytes_processed = 6_000_000_000
+        mock_client.query.return_value = mock_dry_run_job
+
+        client = BigQueryClient(project_id="test-project")
+        with pytest.raises(QueryTooExpensiveError) as exc_info:
+            client.search_patents("oncology")
+
+        assert exc_info.value.estimated_bytes == 6_000_000_000
+        assert exc_info.value.threshold_bytes == 5_000_000_000
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_dry_run_gating_proceeds_when_below_threshold(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        # dry_run_estimate returns 1 GB — below the 5 GB threshold
+        mock_dry_run_job = MagicMock()
+        mock_dry_run_job.total_bytes_processed = 1_000_000_000
+        mock_query_job = MagicMock()
+        mock_query_job.result.return_value = []
+        mock_client.query.side_effect = [mock_dry_run_job, mock_query_job]
+
+        client = BigQueryClient(project_id="test-project")
+        results = client.search_patents("oncology")
+
+        # Should succeed — two calls: dry-run + actual
+        assert mock_client.query.call_count == 2
+        assert results == []
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_dry_run_skipped_when_managed_dataset_set(self, mock_bq_class):
+        mock_client = MagicMock()
+        mock_bq_class.return_value = mock_client
+
+        mock_job = MagicMock()
+        mock_job.result.return_value = []
+        mock_client.query.return_value = mock_job
+
+        client = BigQueryClient(project_id="test-project", managed_dataset="ember_dev")
+        client.search_patents("oncology")
+
+        # Only one call — no dry-run when managed_dataset is set
+        assert mock_client.query.call_count == 1
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_managed_dataset_stored_as_attribute(self, mock_bq_class):
+        client = BigQueryClient(project_id="test-project", managed_dataset="ember_dev")
+        assert client.managed_dataset == "ember_dev"
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_dry_run_threshold_default(self, mock_bq_class):
+        client = BigQueryClient(project_id="test-project")
+        assert client.dry_run_threshold_bytes == 5_000_000_000
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_dry_run_threshold_custom(self, mock_bq_class):
+        client = BigQueryClient(project_id="test-project", dry_run_threshold_bytes=1_000_000_000)
+        assert client.dry_run_threshold_bytes == 1_000_000_000
+
+    @patch("ember_data.bigquery.client.bigquery.Client")
+    def test_query_too_expensive_error_attributes(self, mock_bq_class):
+        err = QueryTooExpensiveError(6_000_000_000, 5_000_000_000)
+        assert err.estimated_bytes == 6_000_000_000
+        assert err.threshold_bytes == 5_000_000_000
+        assert "6,000,000,000" in str(err)
+        assert "5,000,000,000" in str(err)

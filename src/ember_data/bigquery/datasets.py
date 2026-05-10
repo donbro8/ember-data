@@ -25,3 +25,6 @@ NIH_CITATIONS_DATASET = DatasetConfig(
     dataset_id="bigquery-public-data.nih_open_citation",
     description="NIH Open Citations - influence scoring, citation networks",
 )
+
+MANAGED_PATENT_TABLE = "patent_search_cache"
+MANAGED_FDA_TABLE = "fda_drug_labels_cache"

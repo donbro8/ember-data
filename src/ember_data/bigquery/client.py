@@ -12,6 +12,18 @@ from ember_data.classification.spec import DateWindow
 logger = logging.getLogger(__name__)
 
 _ONE_GIGABYTE = 1_000_000_000
+_FIVE_GIGABYTES = 5_000_000_000
+
+
+class QueryTooExpensiveError(Exception):
+    """Raised when a query's estimated scan exceeds the configured threshold."""
+
+    def __init__(self, estimated_bytes: int, threshold_bytes: int) -> None:
+        self.estimated_bytes = estimated_bytes
+        self.threshold_bytes = threshold_bytes
+        super().__init__(
+            f"Query estimated {estimated_bytes:,} bytes, exceeds threshold of {threshold_bytes:,} bytes"
+        )
 
 
 class BigQueryClient:
@@ -25,9 +37,13 @@ class BigQueryClient:
         self,
         project_id: str,
         maximum_bytes_billed: int = _ONE_GIGABYTE,
+        managed_dataset: str | None = None,
+        dry_run_threshold_bytes: int = _FIVE_GIGABYTES,
     ) -> None:
         self.project_id = project_id
         self.maximum_bytes_billed = maximum_bytes_billed
+        self.managed_dataset = managed_dataset
+        self.dry_run_threshold_bytes = dry_run_threshold_bytes
         self._client = bigquery.Client(project=project_id)
 
     def query_fda_drug_events(
@@ -52,7 +68,16 @@ class BigQueryClient:
             limit,
         )
         try:
-            query = fda_drug_events_query(drug_names, therapeutic_area, limit)
+            if self.managed_dataset is not None:
+                query = fda_drug_events_query(
+                    drug_names,
+                    therapeutic_area,
+                    limit,
+                    use_managed_table=True,
+                    managed_dataset=self.managed_dataset,
+                )
+            else:
+                query = fda_drug_events_query(drug_names, therapeutic_area, limit)
             job_config = bigquery.QueryJobConfig(
                 maximum_bytes_billed=self.maximum_bytes_billed
             )
@@ -90,7 +115,20 @@ class BigQueryClient:
         """
         logger.info("Executing patent search: query=%r, limit=%d", query, limit)
         try:
-            sql = patent_search_query(query, limit, date_window, jurisdictions)
+            if self.managed_dataset is not None:
+                sql = patent_search_query(
+                    query,
+                    limit,
+                    date_window,
+                    jurisdictions,
+                    use_managed_table=True,
+                    managed_dataset=self.managed_dataset,
+                )
+            else:
+                sql = patent_search_query(query, limit, date_window, jurisdictions)
+                estimated_bytes = self.dry_run_estimate(sql)
+                if estimated_bytes > self.dry_run_threshold_bytes:
+                    raise QueryTooExpensiveError(estimated_bytes, self.dry_run_threshold_bytes)
             job_config = bigquery.QueryJobConfig(
                 maximum_bytes_billed=self.maximum_bytes_billed
             )
@@ -98,6 +136,8 @@ class BigQueryClient:
             results = [dict(row.items()) for row in job.result()]
             logger.info("Patent search returned %d results", len(results))
             return results
+        except QueryTooExpensiveError:
+            raise
         except Exception as exc:
             logger.error("Patent search failed: %s", exc)
             return []
