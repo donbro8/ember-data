@@ -114,12 +114,12 @@ class PatentJurisdictionEnricher:
 
         if modified:
             entry.last_updated = date.today()
-            # Trigger sync of flat fields (patent_expiry_us / patent_expiry_eu)
-            # by rebuilding the model from its current dict representation.
-            synced_data = BiologicEntry._sync_patent_expiries(entry.model_dump())
-            if synced_data.get("patent_expiry_us") and entry.patent_expiry_us is None:
-                entry.patent_expiry_us = synced_data["patent_expiry_us"]
-            if synced_data.get("patent_expiry_eu") and entry.patent_expiry_eu is None:
-                entry.patent_expiry_eu = synced_data["patent_expiry_eu"]
+            # Sync flat fields (patent_expiry_us / patent_expiry_eu) by
+            # rebuilding via model_validate so the @model_validator fires.
+            synced = BiologicEntry.model_validate(entry.model_dump())
+            if synced.patent_expiry_us and entry.patent_expiry_us is None:
+                entry.patent_expiry_us = synced.patent_expiry_us
+            if synced.patent_expiry_eu and entry.patent_expiry_eu is None:
+                entry.patent_expiry_eu = synced.patent_expiry_eu
 
         return log_entries
