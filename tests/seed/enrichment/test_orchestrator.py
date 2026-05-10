@@ -5,7 +5,6 @@ from __future__ import annotations
 from datetime import UTC, date, datetime, timedelta
 from unittest.mock import MagicMock
 
-import pytest
 
 from ember_data.seed.enrichment.orchestrator import SeedEnrichmentOrchestrator
 from ember_data.seed.enrichment_log import EnrichmentAction, EnrichmentLogEntry

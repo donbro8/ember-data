@@ -7,7 +7,6 @@ from datetime import date, datetime
 from pathlib import Path
 from unittest.mock import MagicMock
 
-import pytest
 
 from ember_data.bigquery.managed_tables import (
     BIOLOGIC_SEED_SCHEMA,
