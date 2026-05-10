@@ -8,6 +8,7 @@ from ember_data.bigquery.datasets import (
     PATENTS_DATASET,
     DatasetConfig,
 )
+from ember_data.bigquery.digest_schema import DIGESTS_SCHEMA
 from ember_data.bigquery.result_schema import RUN_RESULTS_SCHEMA, RUN_SUMMARY_SCHEMA
 from ember_data.bigquery.result_store import CachedRun, ResultReader, ResultWriter
 from ember_data.bigquery.watch_schema import (
@@ -25,6 +26,7 @@ __all__ = [
     "ChangeDetector",
     "ChangeEntry",
     "ChangeType",
+    "DIGESTS_SCHEMA",
     "DatasetConfig",
     "FDA_DRUG_DATASET",
     "NIH_CITATIONS_DATASET",

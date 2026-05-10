@@ -38,6 +38,7 @@ class CachedRun:
     results: list
     created_at: datetime
     query_type: str
+    change_summary: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -72,6 +73,7 @@ class ResultWriter:
         markdown: str,
         watch_id: str | None = None,
         bytes_scanned: int | None = None,
+        change_summary: str | None = None,
     ) -> None:
         """Persist a completed run to BigQuery.
 
@@ -87,6 +89,7 @@ class ResultWriter:
             markdown: Full markdown report string.
             watch_id: Optional watch alert identifier.
             bytes_scanned: Optional BigQuery bytes billed for cost tracking.
+            change_summary: Optional natural-language summary of changes from the previous run.
         """
         created_at = _now_utc()
 
@@ -110,6 +113,7 @@ class ResultWriter:
             bytes_scanned=bytes_scanned,
             trace=trace,
             created_at=created_at,
+            change_summary=change_summary,
         )
 
         results_table = f"{self._dataset}.{_RUN_RESULTS_TABLE}"
@@ -165,6 +169,7 @@ class ResultWriter:
         bytes_scanned: int | None,
         trace: object,
         created_at: datetime,
+        change_summary: str | None = None,
     ) -> dict:
         return {
             "run_id": run_id,
@@ -175,7 +180,25 @@ class ResultWriter:
             "bytes_scanned": bytes_scanned,
             "execution_trace": json.dumps(trace) if trace is not None else None,
             "created_at": created_at.isoformat(),
+            "change_summary": change_summary,
         }
+
+    def update_summary(self, run_id: str, change_summary: str) -> None:
+        """Update the change_summary field on an existing run_summary row.
+
+        Args:
+            run_id: The run identifier whose summary should be updated.
+            change_summary: Natural-language summary of changes.
+        """
+        table = f"{self._dataset}.{_RUN_SUMMARY_TABLE}"
+        sql = f"""
+            UPDATE `{table}`
+            SET change_summary = @change_summary
+            WHERE run_id = @run_id
+        """
+        params = {"run_id": run_id, "change_summary": change_summary}
+        self._client.query_with_params(sql, params)
+        logger.info("Updated change_summary for run_id=%s", run_id)
 
 
 # ---------------------------------------------------------------------------
@@ -216,7 +239,7 @@ class ResultReader:
         """
         normalized = _normalize_query(query)
         sql = f"""
-            SELECT run_id, full_markdown, created_at, query_type
+            SELECT run_id, full_markdown, created_at, query_type, change_summary
             FROM `{self._dataset}.{_RUN_SUMMARY_TABLE}`
             WHERE LOWER(TRIM(query)) = @query_normalized
               AND created_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL {int(ttl_hours)} HOUR)
@@ -237,6 +260,7 @@ class ResultReader:
             results=results,
             created_at=row["created_at"],
             query_type=row.get("query_type", ""),
+            change_summary=row.get("change_summary"),
         )
 
     def get_run(self, run_id: str) -> list[CandidateResult]:

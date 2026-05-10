@@ -168,3 +168,8 @@ class TestRunSummarySchema:
         field = next(f for f in RUN_SUMMARY_SCHEMA if f["name"] == "created_at")
         assert field["type"] == "TIMESTAMP"
         assert field["mode"] == "REQUIRED"
+
+    def test_change_summary_is_nullable(self):
+        field = next(f for f in RUN_SUMMARY_SCHEMA if f["name"] == "change_summary")
+        assert field["type"] == "STRING"
+        assert field["mode"] == "NULLABLE"

@@ -139,4 +139,5 @@ RUN_SUMMARY_SCHEMA: list[dict] = [
     {"name": "bytes_scanned", "type": "INT64", "mode": "NULLABLE"},
     {"name": "execution_trace", "type": "STRING", "mode": "NULLABLE"},
     {"name": "created_at", "type": "TIMESTAMP", "mode": "REQUIRED"},
+    {"name": "change_summary", "type": "STRING", "mode": "NULLABLE"},
 ]

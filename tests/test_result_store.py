@@ -50,6 +50,29 @@ class TestCachedRun:
         assert cr.created_at == now
         assert cr.query_type == "drug"
 
+    def test_change_summary_defaults_to_none(self):
+        now = datetime.now(tz=timezone.utc)
+        cr = CachedRun(
+            run_id="r1",
+            markdown="",
+            results=[],
+            created_at=now,
+            query_type="drug",
+        )
+        assert cr.change_summary is None
+
+    def test_change_summary_accepted(self):
+        now = datetime.now(tz=timezone.utc)
+        cr = CachedRun(
+            run_id="r1",
+            markdown="",
+            results=[],
+            created_at=now,
+            query_type="drug",
+            change_summary="New biosimilar detected",
+        )
+        assert cr.change_summary == "New biosimilar detected"
+
 
 # ---------------------------------------------------------------------------
 # ResultWriter
@@ -158,6 +181,53 @@ class TestResultWriter:
         _table, rows = summary_call[0]
         assert rows[0]["execution_trace"] is None
 
+    def test_write_run_includes_change_summary_in_summary_row(self):
+        client = _make_client()
+        writer = ResultWriter(client, "my_dataset")
+
+        writer.write_run(
+            run_id="run-cs",
+            query="adalimumab",
+            query_type="drug",
+            results=[],
+            trace=None,
+            markdown="# Report",
+            change_summary="New biosimilar approved",
+        )
+
+        summary_call = client.insert_rows.call_args_list[-1]
+        _table, rows = summary_call[0]
+        assert rows[0]["change_summary"] == "New biosimilar approved"
+
+    def test_write_run_change_summary_defaults_to_none(self):
+        client = _make_client()
+        writer = ResultWriter(client, "my_dataset")
+
+        writer.write_run(
+            run_id="run-no-cs",
+            query="adalimumab",
+            query_type="drug",
+            results=[],
+            trace=None,
+            markdown="# Report",
+        )
+
+        summary_call = client.insert_rows.call_args_list[-1]
+        _table, rows = summary_call[0]
+        assert rows[0]["change_summary"] is None
+
+    def test_update_summary_calls_query_with_params(self):
+        client = _make_client()
+        writer = ResultWriter(client, "my_dataset")
+
+        writer.update_summary("run-42", "Two new competitors found")
+
+        client.query_with_params.assert_called_once()
+        sql, params = client.query_with_params.call_args[0]
+        assert "change_summary" in sql
+        assert params["run_id"] == "run-42"
+        assert params["change_summary"] == "Two new competitors found"
+
     def test_write_run_result_uses_model_dump(self):
         """Rows built from model_dump should not include raw Pydantic model instances."""
         client = _make_client()
@@ -221,6 +291,27 @@ class TestResultReader:
         assert cached.run_id == "run-100"
         assert cached.markdown == "# Report"
         assert cached.query_type == "drug"
+
+    def test_get_cached_returns_change_summary(self):
+        now = datetime.now(tz=timezone.utc)
+        client = _make_client()
+        client.query_with_params.side_effect = [
+            [
+                {
+                    "run_id": "run-cs",
+                    "full_markdown": "# Report",
+                    "created_at": now,
+                    "query_type": "drug",
+                    "change_summary": "New competitor launched",
+                }
+            ],
+            [],
+        ]
+        reader = ResultReader(client, "ds")
+
+        cached = reader.get_cached("humira")
+        assert cached is not None
+        assert cached.change_summary == "New competitor launched"
 
     def test_get_cached_normalizes_query(self):
         """Ensures query is lowercased and stripped before lookup."""
