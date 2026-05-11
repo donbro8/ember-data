@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections import Counter
 from datetime import UTC, date, datetime
 
 from ember_data.bigquery.client import BigQueryClient
@@ -10,6 +11,8 @@ from ember_data.seed.enrichment_log import EnrichmentAction, EnrichmentLogEntry
 from ember_data.seed.schema import BiologicEntry, _VALID_JURISDICTIONS
 
 logger = logging.getLogger(__name__)
+
+_HIGH_PRIORITY_JURISDICTIONS = ("US", "EU", "JP", "IN", "KR", "BR", "CN", "CA", "AU", "GB")
 
 
 class PatentJurisdictionEnricher:
@@ -58,6 +61,41 @@ class PatentJurisdictionEnricher:
                 )
 
         return log_entries
+
+    def build_coverage_report(
+        self,
+        entries: list[BiologicEntry],
+        *,
+        source: str = "seed_snapshot",
+        enriched_on: date | None = None,
+    ) -> dict[str, object]:
+        """Build one-time jurisdiction coverage summary for current seed state."""
+        enriched_on = enriched_on or date.today()
+        total_entries = len(entries)
+        coverage_counter = Counter[str]()
+
+        for entry in entries:
+            for jurisdiction in entry.patent_expiries:
+                if jurisdiction in _VALID_JURISDICTIONS:
+                    coverage_counter[jurisdiction] += 1
+
+        coverage: dict[str, dict[str, object]] = {}
+        for jurisdiction in _HIGH_PRIORITY_JURISDICTIONS:
+            covered = coverage_counter.get(jurisdiction, 0)
+            unknown_or_unavailable = max(total_entries - covered, 0)
+            coverage[jurisdiction] = {
+                "covered_entries": covered,
+                "unknown_or_unavailable_entries": unknown_or_unavailable,
+                "status": "covered" if covered > 0 else "unknown_or_unavailable",
+            }
+
+        return {
+            "enriched_on": enriched_on.isoformat(),
+            "source": source,
+            "entry_count": total_entries,
+            "high_priority_jurisdictions": list(_HIGH_PRIORITY_JURISDICTIONS),
+            "coverage": coverage,
+        }
 
     # ------------------------------------------------------------------
     # Internal

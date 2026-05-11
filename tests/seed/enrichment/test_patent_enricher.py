@@ -190,3 +190,41 @@ class TestPatentJurisdictionEnricher:
         # After adding US and EU via patent_expiries, flat fields should sync
         assert entry.patent_expiry_us == date(2035, 3, 15)
         assert entry.patent_expiry_eu == date(2036, 7, 22)
+
+    def test_build_coverage_report_counts_and_unknowns(self) -> None:
+        entries = [
+            _make_entry(drug_name="a", patent_expiries={"US": date(2030, 1, 1), "EU": date(2031, 1, 1)}),
+            _make_entry(drug_name="b", patent_expiries={"JP": date(2032, 1, 1), "KR": date(2033, 1, 1)}),
+            _make_entry(drug_name="c", patent_expiries={}),
+        ]
+        enricher = PatentJurisdictionEnricher(client=MagicMock(spec=BigQueryClient))
+        report = enricher.build_coverage_report(
+            entries,
+            source="bigquery_patents",
+            enriched_on=date(2026, 5, 11),
+        )
+
+        assert report["enriched_on"] == "2026-05-11"
+        assert report["source"] == "bigquery_patents"
+        assert report["entry_count"] == 3
+
+        coverage = report["coverage"]
+        assert coverage["US"]["covered_entries"] == 1
+        assert coverage["US"]["unknown_or_unavailable_entries"] == 2
+        assert coverage["KR"]["covered_entries"] == 1
+        assert coverage["KR"]["unknown_or_unavailable_entries"] == 2
+
+        # No CN data in entries; this must be represented as unknown/unavailable,
+        # not evidence of no patent.
+        assert coverage["CN"]["covered_entries"] == 0
+        assert coverage["CN"]["unknown_or_unavailable_entries"] == 3
+        assert coverage["CN"]["status"] == "unknown_or_unavailable"
+
+    def test_build_coverage_report_includes_all_priority_jurisdictions(self) -> None:
+        entry = _make_entry(drug_name="a", patent_expiries={"US": date(2030, 1, 1)})
+        enricher = PatentJurisdictionEnricher(client=MagicMock(spec=BigQueryClient))
+        report = enricher.build_coverage_report([entry])
+        coverage = report["coverage"]
+
+        expected = {"US", "EU", "JP", "IN", "KR", "BR", "CN", "CA", "AU", "GB"}
+        assert set(coverage.keys()) == expected
