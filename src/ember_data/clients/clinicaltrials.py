@@ -182,20 +182,27 @@ class ClinicalTrialsClient:
 
     def search(
         self,
-        condition: str,
+        condition: str | None = None,
         intervention: str | None = None,
+        term: str | None = None,
         from_date: date | None = None,
         to_date: date | None = None,
         max_results: int = 20,
     ) -> list[tuple[Trial, SourceProvenance]]:
         """Search ClinicalTrials.gov for studies matching the given criteria.
 
+        At least one of ``condition``, ``intervention``, or ``term`` must be
+        provided. An empty call raises ``ValueError`` before making any network
+        request.
+
         Parameters
         ----------
         condition:
-            Disease or condition to search for.
+            Disease or condition to search for (``query.cond``).
         intervention:
-            Optional drug or intervention name to narrow the search.
+            Drug or intervention name (``query.intr``).
+        term:
+            Broad free-text term (``query.term``).
         from_date:
             Optional start of the date range filter (by study start date).
         to_date:
@@ -207,13 +214,21 @@ class ClinicalTrialsClient:
         -------
         list of (Trial, SourceProvenance) tuples.
         """
+        if not condition and not intervention and not term:
+            raise ValueError(
+                "At least one of condition, intervention, or term must be provided."
+            )
+
         params: dict[str, str] = {
-            "query.cond": condition,
             "format": "json",
             "pageSize": str(max_results),
         }
+        if condition:
+            params["query.cond"] = condition
         if intervention:
             params["query.intr"] = intervention
+        if term:
+            params["query.term"] = term
         if from_date:
             params["filter.advanced"] = f"AREA[StartDate]RANGE[{from_date.isoformat()},MAX]"
         if to_date:
@@ -237,7 +252,11 @@ class ClinicalTrialsClient:
             return []
 
         studies: list[dict[str, Any]] = data.get("studies", [])
-        matched_fields = ["condition"] if not intervention else ["condition", "intervention"]
+        matched_fields = (
+            (["condition"] if condition else [])
+            + (["intervention"] if intervention else [])
+            + (["term"] if term else [])
+        )
 
         results: list[tuple[Trial, SourceProvenance]] = []
         for study in studies:

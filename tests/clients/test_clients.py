@@ -370,6 +370,141 @@ class TestClinicalTrialsSearch:
         assert "pageSize=5" in captured_urls[0]
 
 
+class TestClinicalTrialsOptionalParams:
+    """Tests for optional condition/intervention/term query parameters (TASK-140)."""
+
+    def test_intervention_only_no_condition(self) -> None:
+        """adalimumab queried via query.intr with no condition."""
+        client = ClinicalTrialsClient()
+        captured_urls: list[str] = []
+
+        def capture_url(url: str, max_attempts: int = 3) -> tuple[str, dict]:
+            captured_urls.append(url)
+            return json.dumps({"studies": []}), {}
+
+        with patch.object(client, "_retry_get", side_effect=capture_url):
+            client.search(intervention="adalimumab")
+
+        url = captured_urls[0]
+        assert "query.intr=adalimumab" in url
+        assert "query.cond" not in url
+
+    def test_term_only(self) -> None:
+        """Broad term query uses query.term, no condition or intervention."""
+        client = ClinicalTrialsClient()
+        captured_urls: list[str] = []
+
+        def capture_url(url: str, max_attempts: int = 3) -> tuple[str, dict]:
+            captured_urls.append(url)
+            return json.dumps({"studies": []}), {}
+
+        with patch.object(client, "_retry_get", side_effect=capture_url):
+            client.search(term="VEGF pathway")
+
+        url = captured_urls[0]
+        assert "query.term=" in url
+        assert "query.cond" not in url
+        assert "query.intr" not in url
+
+    def test_combined_condition_intervention_term(self) -> None:
+        """All three params present in URL when provided."""
+        client = ClinicalTrialsClient()
+        captured_urls: list[str] = []
+
+        def capture_url(url: str, max_attempts: int = 3) -> tuple[str, dict]:
+            captured_urls.append(url)
+            return json.dumps({"studies": []}), {}
+
+        with patch.object(client, "_retry_get", side_effect=capture_url):
+            client.search(condition="rheumatoid arthritis", intervention="adalimumab", term="TNF")
+
+        url = captured_urls[0]
+        assert "query.cond=" in url
+        assert "query.intr=" in url
+        assert "query.term=" in url
+
+    def test_condition_only_backward_compatible(self) -> None:
+        """Existing condition-only calls still work."""
+        client = ClinicalTrialsClient()
+        with patch.object(
+            client, "_retry_get", return_value=(json.dumps(_CT_RESPONSE), {})
+        ):
+            results = client.search(condition="breast cancer")
+
+        assert len(results) == 1
+        _, prov = results[0]
+        assert "condition" in prov.matched_fields
+        assert "intervention" not in prov.matched_fields
+        assert "term" not in prov.matched_fields
+
+    def test_intervention_only_matched_fields(self) -> None:
+        """matched_fields contains only 'intervention' for intervention-only search."""
+        client = ClinicalTrialsClient()
+        with patch.object(
+            client, "_retry_get", return_value=(json.dumps(_CT_RESPONSE), {})
+        ):
+            results = client.search(intervention="adalimumab")
+
+        _, prov = results[0]
+        assert prov.matched_fields == ["intervention"]
+
+    def test_term_only_matched_fields(self) -> None:
+        """matched_fields contains only 'term' for term-only search."""
+        client = ClinicalTrialsClient()
+        with patch.object(
+            client, "_retry_get", return_value=(json.dumps(_CT_RESPONSE), {})
+        ):
+            results = client.search(term="VEGF")
+
+        _, prov = results[0]
+        assert prov.matched_fields == ["term"]
+
+    def test_combined_matched_fields(self) -> None:
+        """matched_fields contains all provided field names."""
+        client = ClinicalTrialsClient()
+        with patch.object(
+            client, "_retry_get", return_value=(json.dumps(_CT_RESPONSE), {})
+        ):
+            results = client.search(condition="cancer", intervention="drug", term="broad")
+
+        _, prov = results[0]
+        assert "condition" in prov.matched_fields
+        assert "intervention" in prov.matched_fields
+        assert "term" in prov.matched_fields
+
+    def test_no_inputs_raises_value_error(self) -> None:
+        """Calling search() with no query inputs raises ValueError before any network call."""
+        client = ClinicalTrialsClient()
+        with patch.object(client, "_retry_get") as mock_get:
+            with pytest.raises(ValueError, match="At least one of"):
+                client.search()
+            mock_get.assert_not_called()
+
+    def test_all_none_raises_value_error(self) -> None:
+        """Explicit None for all params raises ValueError."""
+        client = ClinicalTrialsClient()
+        with patch.object(client, "_retry_get") as mock_get:
+            with pytest.raises(ValueError):
+                client.search(condition=None, intervention=None, term=None)
+            mock_get.assert_not_called()
+
+    def test_omitted_params_not_in_url(self) -> None:
+        """Params not provided are omitted from the query string."""
+        client = ClinicalTrialsClient()
+        captured_urls: list[str] = []
+
+        def capture_url(url: str, max_attempts: int = 3) -> tuple[str, dict]:
+            captured_urls.append(url)
+            return json.dumps({"studies": []}), {}
+
+        with patch.object(client, "_retry_get", side_effect=capture_url):
+            client.search(condition="cancer")
+
+        url = captured_urls[0]
+        assert "query.intr" not in url
+        assert "query.term" not in url
+
+
 # ===========================================================================
 # PubMedClient tests
 # ===========================================================================
