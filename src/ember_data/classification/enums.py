@@ -23,13 +23,17 @@ class CellLineClass(StrEnum):
     """Classification of cell line origin and type."""
 
     MAMMALIAN = "mammalian"
+    CHO = "cho"  # Chinese Hamster Ovary — primary mammalian mfg cell line
+    HEK = "hek"  # Human Embryonic Kidney — common expression system
     MICROBIAL = "microbial"
+    E_COLI = "e_coli"  # Escherichia coli — dominant bacterial expression host
+    YEAST = "yeast"
+    PLANT = "plant"
+    INSECT = "insect"
     HUMAN_PRIMARY = "human_primary"
     HUMAN_IMMORTALIZED = "human_immortalized"
     MURINE = "murine"
     NON_HUMAN_PRIMATE = "non_human_primate"
-    INSECT = "insect"
-    YEAST = "yeast"
     BACTERIAL = "bacterial"
     STEM_CELL_DERIVED = "stem_cell_derived"
     ORGANOID = "organoid"

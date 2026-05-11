@@ -70,6 +70,10 @@ class SearchSpec(BaseModel):
     # Optional source query text retained for traceability.
     query: str = ""
 
+    # Explicit query type for agent gate routing (DIR-007).
+    # Consumers should set this instead of inspecting raw query text.
+    query_type: str | None = None
+
     # Target dimension (UniProt/GO resolver)
     target: TargetClassification | ResolvedTerm | None = None
 

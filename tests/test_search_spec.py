@@ -9,6 +9,7 @@ from pydantic import ValidationError
 
 from ember_data.classification.enums import (
     ATCNode,
+    CellLineClass,
     Jurisdiction,
     ModalityClassification,
     TargetClassification,
@@ -342,3 +343,195 @@ class TestSearchSpecResolvedTerms:
         spec = SearchSpec(resolved_terms=[resolved], pending_disambiguations=[req])
         assert len(spec.resolved_terms) == 1
         assert len(spec.pending_disambiguations) == 1
+
+
+# ---------------------------------------------------------------------------
+# DIR-007: query_type field
+# ---------------------------------------------------------------------------
+
+
+class TestSearchSpecQueryType:
+    def test_query_type_defaults_none(self) -> None:
+        spec = SearchSpec()
+        assert spec.query_type is None
+
+    def test_query_type_opportunity(self) -> None:
+        spec = SearchSpec(query_type="opportunity")
+        assert spec.query_type == "opportunity"
+
+    def test_query_type_arbitrary_string(self) -> None:
+        spec = SearchSpec(query_type="competitor_landscape")
+        assert spec.query_type == "competitor_landscape"
+
+    def test_existing_callers_unaffected(self) -> None:
+        """Callers that do not set query_type continue to work."""
+        spec = SearchSpec(query="mAb oncology patent expiry 2025-2028")
+        assert spec.query_type is None
+        assert spec.query == "mAb oncology patent expiry 2025-2028"
+
+
+# ---------------------------------------------------------------------------
+# DIR-007: cell_line_class new enum values
+# ---------------------------------------------------------------------------
+
+
+class TestCellLineClassDIR007:
+    def test_cho_accepted(self) -> None:
+        spec = SearchSpec(cell_line_class=CellLineClass.CHO)
+        assert spec.cell_line_class == CellLineClass.CHO
+
+    def test_hek_accepted(self) -> None:
+        spec = SearchSpec(cell_line_class=CellLineClass.HEK)
+        assert spec.cell_line_class == CellLineClass.HEK
+
+    def test_e_coli_accepted(self) -> None:
+        spec = SearchSpec(cell_line_class=CellLineClass.E_COLI)
+        assert spec.cell_line_class == CellLineClass.E_COLI
+
+    def test_plant_accepted(self) -> None:
+        spec = SearchSpec(cell_line_class=CellLineClass.PLANT)
+        assert spec.cell_line_class == CellLineClass.PLANT
+
+    def test_mammalian_still_accepted(self) -> None:
+        spec = SearchSpec(cell_line_class=CellLineClass.MAMMALIAN)
+        assert spec.cell_line_class == CellLineClass.MAMMALIAN
+
+    def test_microbial_still_accepted(self) -> None:
+        spec = SearchSpec(cell_line_class=CellLineClass.MICROBIAL)
+        assert spec.cell_line_class == CellLineClass.MICROBIAL
+
+    def test_yeast_still_accepted(self) -> None:
+        spec = SearchSpec(cell_line_class=CellLineClass.YEAST)
+        assert spec.cell_line_class == CellLineClass.YEAST
+
+    def test_insect_still_accepted(self) -> None:
+        spec = SearchSpec(cell_line_class=CellLineClass.INSECT)
+        assert spec.cell_line_class == CellLineClass.INSECT
+
+    def test_cho_string_value(self) -> None:
+        assert CellLineClass.CHO == "cho"
+
+    def test_hek_string_value(self) -> None:
+        assert CellLineClass.HEK == "hek"
+
+    def test_e_coli_string_value(self) -> None:
+        assert CellLineClass.E_COLI == "e_coli"
+
+    def test_plant_string_value(self) -> None:
+        assert CellLineClass.PLANT == "plant"
+
+
+# ---------------------------------------------------------------------------
+# DIR-007: mAb modality variants
+# ---------------------------------------------------------------------------
+
+
+class TestModalityMABVariants:
+    def test_mab_enum_value(self) -> None:
+        spec = SearchSpec(modality=ModalityClassification.MAB)
+        assert spec.modality == ModalityClassification.MAB
+
+    def test_monoclonal_antibody_enum_value(self) -> None:
+        spec = SearchSpec(modality=ModalityClassification.MONOCLONAL_ANTIBODY)
+        assert spec.modality == ModalityClassification.MONOCLONAL_ANTIBODY
+
+    def test_mab_string_value(self) -> None:
+        assert ModalityClassification.MAB == "mab"
+
+    def test_monoclonal_antibody_string_value(self) -> None:
+        assert ModalityClassification.MONOCLONAL_ANTIBODY == "monoclonal_antibody"
+
+
+# ---------------------------------------------------------------------------
+# DIR-007: revenue and jurisdiction fields
+# ---------------------------------------------------------------------------
+
+
+class TestRevenueAndJurisdiction:
+    def test_min_revenue_high_value_signal(self) -> None:
+        spec = SearchSpec(min_revenue_millions=500.0)
+        assert spec.min_revenue_millions == 500.0
+
+    def test_min_revenue_explicit_value(self) -> None:
+        spec = SearchSpec(min_revenue_millions=250.0)
+        assert spec.min_revenue_millions == 250.0
+
+    def test_jurisdiction_us_eu(self) -> None:
+        spec = SearchSpec(jurisdictions=[Jurisdiction.US, Jurisdiction.EU])
+        assert Jurisdiction.US in spec.jurisdictions
+        assert Jurisdiction.EU in spec.jurisdictions
+
+    def test_jurisdiction_explicit_list(self) -> None:
+        codes = [Jurisdiction.US, Jurisdiction.JP, Jurisdiction.CN]
+        spec = SearchSpec(jurisdictions=codes)
+        assert spec.jurisdictions == codes
+
+
+# ---------------------------------------------------------------------------
+# DIR-007: patent expiry window (2025–2028 example)
+# ---------------------------------------------------------------------------
+
+
+class TestPatentExpiryWindowDIR007:
+    def test_patent_window_2025_2028(self) -> None:
+        window = DateWindow.between(date(2025, 1, 1), date(2028, 12, 31))
+        spec = SearchSpec(patent_expiry_window=window)
+        assert spec.patent_expiry_window is not None
+        assert spec.patent_expiry_window.start == date(2025, 1, 1)
+        assert spec.patent_expiry_window.end == date(2028, 12, 31)
+
+    def test_patent_window_preserves_start_end(self) -> None:
+        start, end = date(2024, 6, 1), date(2027, 6, 1)
+        spec = SearchSpec(patent_expiry_window=DateWindow.between(start, end))
+        assert spec.patent_expiry_window.start == start
+        assert spec.patent_expiry_window.end == end
+
+
+# ---------------------------------------------------------------------------
+# DIR-007: composite opportunity query (mAb + mammalian + revenue + patent)
+# ---------------------------------------------------------------------------
+
+
+class TestDIR007CompositeQuery:
+    def test_full_opportunity_spec(self) -> None:
+        """Mirrors the DIR-007 example: mAb, mammalian, high-value, 2025-2028 window."""
+        spec = SearchSpec(
+            query_type="opportunity",
+            modality=ModalityClassification.MAB,
+            cell_line_class=CellLineClass.MAMMALIAN,
+            min_revenue_millions=500.0,
+            patent_expiry_window=DateWindow.between(date(2025, 1, 1), date(2028, 12, 31)),
+            jurisdictions=[Jurisdiction.US, Jurisdiction.EU],
+        )
+        assert spec.query_type == "opportunity"
+        assert spec.modality == ModalityClassification.MAB
+        assert spec.cell_line_class == CellLineClass.MAMMALIAN
+        assert spec.min_revenue_millions == 500.0
+        assert spec.patent_expiry_window.start == date(2025, 1, 1)
+        assert spec.patent_expiry_window.end == date(2028, 12, 31)
+        assert Jurisdiction.US in spec.jurisdictions
+
+    def test_cho_cell_line_opportunity(self) -> None:
+        """CHO-specific manufacturing filter for mAb production."""
+        spec = SearchSpec(
+            query_type="opportunity",
+            modality=ModalityClassification.MAB,
+            cell_line_class=CellLineClass.CHO,
+            min_revenue_millions=100.0,
+        )
+        assert spec.cell_line_class == CellLineClass.CHO
+        assert spec.modality == ModalityClassification.MAB
+
+    def test_backward_compat_no_new_fields(self) -> None:
+        """Callers using only pre-DIR-007 fields are unaffected."""
+        spec = SearchSpec(
+            query="antibody oncology",
+            target=TargetClassification.CHECKPOINT_PROTEIN,
+            therapeutic_area=ATCNode.L,
+            domains=["trials", "patents"],
+        )
+        assert spec.query_type is None
+        assert spec.cell_line_class is None
+        assert spec.min_revenue_millions is None
+        assert spec.jurisdictions == []
+        assert spec.patent_expiry_window is None
