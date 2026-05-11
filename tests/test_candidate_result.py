@@ -1,7 +1,10 @@
 """Tests for CandidateResult, ResultType, and build_canonical_id."""
 
+from datetime import date
+
 from ember_data.models.result import (
     CandidateResult,
+    PatentJurisdiction,
     ResultType,
     build_canonical_id,
 )
@@ -186,3 +189,68 @@ def test_import_from_result_module():
 
 def test_import_from_models_package():
     from ember_data.models import CandidateResult, ResultType, build_canonical_id  # noqa: F401
+
+
+# ---------------------------------------------------------------------------
+# Score/match explanation compatibility
+# ---------------------------------------------------------------------------
+
+
+def test_explanation_fields_default_backward_compatible():
+    result = CandidateResult(drug_name="Humira")
+    assert result.matched_dimensions == []
+    assert result.missed_dimensions == []
+    assert result.concrete_labels == {}
+    assert result.component_scores == {}
+    assert result.threshold_metadata == {}
+    assert result.suppression_metadata == {}
+    assert result.evidence_summary == {}
+
+
+def test_explanation_fields_roundtrip_serialization():
+    result = CandidateResult(
+        target="EGFR",
+        matched_dimensions=["target", "modality"],
+        missed_dimensions=["revenue"],
+        concrete_labels={"modality": "mAb", "cell_line_class": "mammalian"},
+        component_scores={"semantic_score": 0.82, "structured_score": 0.76},
+        threshold_metadata={"minimum_score": 0.75, "passed": True},
+        suppression_metadata={"suppressed": False, "reasons": []},
+        evidence_summary={"trial_count": 3, "article_count": 12},
+    )
+    payload = result.model_dump()
+    restored = CandidateResult.model_validate(payload)
+
+    assert restored.matched_dimensions == ["target", "modality"]
+    assert restored.missed_dimensions == ["revenue"]
+    assert restored.concrete_labels == {"modality": "mAb", "cell_line_class": "mammalian"}
+    assert restored.component_scores == {"semantic_score": 0.82, "structured_score": 0.76}
+    assert restored.threshold_metadata == {"minimum_score": 0.75, "passed": True}
+    assert restored.suppression_metadata == {"suppressed": False, "reasons": []}
+    assert restored.evidence_summary == {"trial_count": 3, "article_count": 12}
+
+
+def test_patent_expiry_derivation_methods_supported():
+    patent = PatentJurisdiction(
+        country_code="US",
+        country_name="United States",
+        publication_number="US-123456-A1",
+        status="active",
+        url="https://patents.google.com/patent/US123456A1",
+        expiry_derivation_method="pta_adjusted",
+    )
+    assert patent.expiry_derivation_method == "pta_adjusted"
+
+
+def test_regulatory_context_and_data_exclusivity_distinct_from_patent_expiry():
+    result = CandidateResult(
+        drug_name="adalimumab",
+        earliest_patent_expiry=date(2032, 1, 1),
+        earliest_patent_expiry_derivation_method="filing_20yr",
+        data_exclusivity_expiry=date(2030, 1, 1),
+        data_exclusivity_regime="US-BLA-12yr",
+        framework_regulatory_context={"region": "US", "framework": "BLA"},
+    )
+    assert result.earliest_patent_expiry == date(2032, 1, 1)
+    assert result.data_exclusivity_expiry == date(2030, 1, 1)
+    assert result.framework_regulatory_context == {"region": "US", "framework": "BLA"}

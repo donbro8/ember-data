@@ -48,6 +48,12 @@ class TestDefaultPath:
         sql = patent_search_query("oncology")
         assert "patents-public-data.patents.publications" in sql
 
+    def test_default_includes_derivation_provenance_fields(self):
+        sql = patent_search_query("oncology")
+        assert "expiry_derivation_method" in sql
+        assert "expiry_derivation_provenance" in sql
+        assert "'filing_20yr'" in sql
+
     def test_managed_false_with_dataset_still_uses_public_path(self):
         """Setting managed_dataset without use_managed_table must not change the path."""
         sql_default = patent_search_query("oncology")
@@ -103,6 +109,12 @@ class TestManagedTableTarget:
     def test_includes_expiry_approximate_true(self):
         sql = _managed("test")
         assert "TRUE AS expiry_approximate" in sql
+
+    def test_includes_derivation_provenance_fields(self):
+        sql = _managed("test")
+        assert "expiry_derivation_method" in sql
+        assert "expiry_derivation_provenance" in sql
+        assert "'filing_20yr'" in sql
 
     def test_includes_publication_number(self):
         sql = _managed("test")

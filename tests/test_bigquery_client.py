@@ -74,6 +74,8 @@ class TestPatentSearchQuery:
         sql = patent_search_query("oncology")
         assert "derived_expiry" in sql
         assert "expiry_approximate" in sql
+        assert "expiry_derivation_method" in sql
+        assert "expiry_derivation_provenance" in sql
         assert "INTERVAL 20 YEAR" in sql
 
     def test_before_window(self):
@@ -262,6 +264,7 @@ class TestBigQueryClient:
             ("publication_number", "US-999-A1"),
             ("derived_expiry", "2042-03-15"),
             ("expiry_approximate", True),
+            ("expiry_derivation_method", "filing_20yr"),
         ]
         mock_job = MagicMock()
         mock_job.total_bytes_processed = 0
@@ -273,6 +276,7 @@ class TestBigQueryClient:
 
         assert results[0]["expiry_approximate"] is True
         assert results[0]["derived_expiry"] == "2042-03-15"
+        assert results[0]["expiry_derivation_method"] == "filing_20yr"
 
     @patch("ember_data.bigquery.client.bigquery.Client")
     def test_search_patents_not_yet_expired(self, mock_bq_class):

@@ -5,7 +5,7 @@ import re
 import unicodedata
 from datetime import date
 from enum import Enum
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -40,6 +40,10 @@ class PatentJurisdiction(BaseModel):
     grant_date: date | None = None
     expiry_date: date | None = None
     expiry_date_approximate: bool = False
+    expiry_derivation_method: (
+        Literal["filing_20yr", "spc_adjusted", "pta_adjusted", "verified", "manual"] | None
+    ) = None
+    expiry_derivation_provenance: str | None = None
     status: Literal["active", "expired", "pending"]
     title: str | None = None
     url: str
@@ -120,6 +124,13 @@ class CandidateResult(BaseModel):
     patents: list[PatentJurisdiction] = Field(default_factory=list)
     earliest_patent_expiry: date | None = None
     earliest_expiry_jurisdiction: str | None = None
+    earliest_patent_expiry_derivation_method: (
+        Literal["filing_20yr", "spc_adjusted", "pta_adjusted", "verified", "manual"] | None
+    ) = None
+    earliest_patent_expiry_verified_date: date | None = None
+    data_exclusivity_expiry: date | None = None
+    data_exclusivity_regime: str | None = None
+    framework_regulatory_context: dict[str, Any] = Field(default_factory=dict)
 
     # Scoring
     overall_score: float | None = Field(default=None, ge=0, le=1)
@@ -139,6 +150,15 @@ class CandidateResult(BaseModel):
     structured_score: float | None = None
     semantic_score: float | None = None
     evidence_score: float | None = None
+
+    # Score and match explanation (additive; backward compatible)
+    matched_dimensions: list[str] = Field(default_factory=list)
+    missed_dimensions: list[str] = Field(default_factory=list)
+    concrete_labels: dict[str, str] = Field(default_factory=dict)
+    component_scores: dict[str, float] = Field(default_factory=dict)
+    threshold_metadata: dict[str, Any] = Field(default_factory=dict)
+    suppression_metadata: dict[str, Any] = Field(default_factory=dict)
+    evidence_summary: dict[str, Any] = Field(default_factory=dict)
 
     # Identity enrichment
     brand_names: list[str] = Field(default_factory=list)

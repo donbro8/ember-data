@@ -14,6 +14,8 @@ _PATENT_FIELDS = [
     {"name": "grant_date", "type": "DATE", "mode": "NULLABLE"},
     {"name": "expiry_date", "type": "DATE", "mode": "NULLABLE"},
     {"name": "expiry_date_approximate", "type": "BOOLEAN", "mode": "NULLABLE"},
+    {"name": "expiry_derivation_method", "type": "STRING", "mode": "NULLABLE"},
+    {"name": "expiry_derivation_provenance", "type": "STRING", "mode": "NULLABLE"},
     {"name": "status", "type": "STRING", "mode": "NULLABLE"},
     {"name": "title", "type": "STRING", "mode": "NULLABLE"},
     {"name": "url", "type": "STRING", "mode": "NULLABLE"},
@@ -75,6 +77,15 @@ RUN_RESULTS_SCHEMA: list[dict] = [
     # Patent-level aggregates
     {"name": "earliest_patent_expiry", "type": "DATE", "mode": "NULLABLE"},
     {"name": "earliest_expiry_jurisdiction", "type": "STRING", "mode": "NULLABLE"},
+    {
+        "name": "earliest_patent_expiry_derivation_method",
+        "type": "STRING",
+        "mode": "NULLABLE",
+    },
+    {"name": "earliest_patent_expiry_verified_date", "type": "DATE", "mode": "NULLABLE"},
+    {"name": "data_exclusivity_expiry", "type": "DATE", "mode": "NULLABLE"},
+    {"name": "data_exclusivity_regime", "type": "STRING", "mode": "NULLABLE"},
+    {"name": "framework_regulatory_context", "type": "JSON", "mode": "NULLABLE"},
     # Scoring
     {"name": "overall_score", "type": "FLOAT64", "mode": "NULLABLE"},
     # Provenance

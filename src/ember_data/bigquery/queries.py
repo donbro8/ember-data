@@ -238,7 +238,9 @@ def patent_search_query(
     p.country_code,
     REGEXP_EXTRACT(p.publication_number, r'^([A-Z]{{2}})') AS country_code_from_pub,
     {_DERIVED_EXPIRY_EXPR} AS derived_expiry,
-    TRUE AS expiry_approximate
+    TRUE AS expiry_approximate,
+    'filing_20yr' AS expiry_derivation_method,
+    'Derived from filing_date + 20 years; no PTA/SPC adjustment in source dataset' AS expiry_derivation_provenance
 FROM `{PATENTS_DATASET.dataset_id}.publications` p,
      UNNEST(p.title_localized) AS t,
      UNNEST(p.abstract_localized) AS a
@@ -294,7 +296,9 @@ def _patent_search_query_managed(
     grant_date,
     country_code,
     derived_expiry,
-    TRUE AS expiry_approximate
+    TRUE AS expiry_approximate,
+    'filing_20yr' AS expiry_derivation_method,
+    'Precomputed from filing_date + 20 years in managed cache build' AS expiry_derivation_provenance
 FROM `{managed_dataset}.{MANAGED_PATENT_TABLE}`
 {where_clause}
 ORDER BY filing_date_parsed DESC

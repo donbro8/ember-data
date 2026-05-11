@@ -70,6 +70,11 @@ class TestRunResultsSchema:
         names = self._field_names(RUN_RESULTS_SCHEMA)
         assert "earliest_patent_expiry" in names
         assert "earliest_expiry_jurisdiction" in names
+        assert "earliest_patent_expiry_derivation_method" in names
+        assert "earliest_patent_expiry_verified_date" in names
+        assert "data_exclusivity_expiry" in names
+        assert "data_exclusivity_regime" in names
+        assert "framework_regulatory_context" in names
 
     def test_trial_aggregate_fields_present(self):
         names = self._field_names(RUN_RESULTS_SCHEMA)
@@ -91,6 +96,8 @@ class TestRunResultsSchema:
         assert "grant_date" in sub_names
         assert "expiry_date" in sub_names
         assert "expiry_date_approximate" in sub_names
+        assert "expiry_derivation_method" in sub_names
+        assert "expiry_derivation_provenance" in sub_names
         assert "status" in sub_names
         assert "title" in sub_names
         assert "url" in sub_names
